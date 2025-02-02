@@ -25,20 +25,20 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#2C3333",
+          DEFAULT: "#1A1F2C",
           foreground: "#FFFFFF",
         },
         secondary: {
-          DEFAULT: "#A5C9CA",
-          foreground: "#2C3333",
+          DEFAULT: "#403E43",
+          foreground: "#FFFFFF",
         },
         accent: {
-          DEFAULT: "#E7F6F2",
-          foreground: "#2C3333",
+          DEFAULT: "#9b87f5",
+          foreground: "#FFFFFF",
         },
         muted: {
-          DEFAULT: "#F5F5F5",
-          foreground: "#2C3333",
+          DEFAULT: "#F1F1F1",
+          foreground: "#333333",
         },
       },
       fontFamily: {
