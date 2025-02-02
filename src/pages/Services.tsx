@@ -21,7 +21,6 @@ import {
   Heart,
   ScrollText,
   Users,
-  FileContract,
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -153,7 +152,7 @@ const services = [
       "Préparation de documents légaux (contrats)",
       "Suivi des paiements et conformité avec les régulations",
     ],
-    icon: <FileContract className="w-10 h-10 text-primary" />,
+    icon: <FileText className="w-10 h-10 text-primary" />,
   },
 ];
 
