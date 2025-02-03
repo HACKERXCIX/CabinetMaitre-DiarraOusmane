@@ -23,6 +23,8 @@ import {
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
+import { Link } from "react-router-dom";
+import { Eye } from "lucide-react";
 
 interface Property {
   id: number;
@@ -217,10 +219,16 @@ const RealEstate = () => {
                   </p>
                   <p className="text-muted-foreground">{property.description}</p>
                 </CardContent>
-                <CardFooter>
+                <CardFooter className="flex gap-2">
+                  <Link to={`/immobilier/${property.id}`} className="flex-1">
+                    <Button className="w-full" variant="outline">
+                      <Eye className="mr-2" />
+                      Voir détails
+                    </Button>
+                  </Link>
                   <Dialog>
                     <DialogTrigger asChild>
-                      <Button className="w-full">Demander une visite</Button>
+                      <Button className="flex-1">Demander une visite</Button>
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[425px]">
                       <DialogHeader>
