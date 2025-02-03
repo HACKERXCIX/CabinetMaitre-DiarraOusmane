@@ -9,1169 +9,389 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      admin_profiles: {
+      analysis_history: {
         Row: {
-          alert_preferences: Json | null
+          analysis_date: string
           created_at: string
-          display_preferences: Json | null
-          email: string | null
-          first_name: string | null
-          id: string
-          last_name: string | null
-          phone: string | null
-          status: string | null
+          detected_symptoms: string[] | null
+          id: number
+          patient_id: number | null
+          provisional_diagnosis: string | null
           updated_at: string
-          user_id: string
-          zone: string | null
         }
         Insert: {
-          alert_preferences?: Json | null
+          analysis_date?: string
           created_at?: string
-          display_preferences?: Json | null
-          email?: string | null
-          first_name?: string | null
-          id?: string
-          last_name?: string | null
-          phone?: string | null
-          status?: string | null
+          detected_symptoms?: string[] | null
+          id?: number
+          patient_id?: number | null
+          provisional_diagnosis?: string | null
           updated_at?: string
-          user_id: string
-          zone?: string | null
         }
         Update: {
-          alert_preferences?: Json | null
+          analysis_date?: string
           created_at?: string
-          display_preferences?: Json | null
-          email?: string | null
-          first_name?: string | null
-          id?: string
-          last_name?: string | null
-          phone?: string | null
-          status?: string | null
+          detected_symptoms?: string[] | null
+          id?: number
+          patient_id?: number | null
+          provisional_diagnosis?: string | null
           updated_at?: string
-          user_id?: string
-          zone?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "analysis_history_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
       }
-      advertisements: {
+      doctor_assignments: {
         Row: {
-          click_count: number | null
-          content: string
-          created_at: string
-          end_date: string
-          id: string
-          media_url: string | null
-          metadata: Json | null
-          priority: number | null
-          start_date: string
-          status: string
-          target_zones: string[] | null
-          title: string
-          type: string
-          updated_at: string
-          view_count: number | null
-        }
-        Insert: {
-          click_count?: number | null
-          content: string
-          created_at?: string
-          end_date: string
-          id?: string
-          media_url?: string | null
-          metadata?: Json | null
-          priority?: number | null
-          start_date: string
-          status?: string
-          target_zones?: string[] | null
-          title: string
-          type: string
-          updated_at?: string
-          view_count?: number | null
-        }
-        Update: {
-          click_count?: number | null
-          content?: string
-          created_at?: string
-          end_date?: string
-          id?: string
-          media_url?: string | null
-          metadata?: Json | null
-          priority?: number | null
-          start_date?: string
-          status?: string
-          target_zones?: string[] | null
-          title?: string
-          type?: string
-          updated_at?: string
-          view_count?: number | null
-        }
-        Relationships: []
-      }
-      agent_locations: {
-        Row: {
-          agent_id: string
+          assigned_at: string | null
           created_at: string | null
-          id: string
-          last_update: string | null
-          latitude: number
-          longitude: number
-          metadata: Json | null
-          status: string
+          doctor_email: string
+          id: number
+          patient_id: number | null
+          status: string | null
           updated_at: string | null
         }
         Insert: {
-          agent_id: string
+          assigned_at?: string | null
           created_at?: string | null
-          id?: string
-          last_update?: string | null
-          latitude: number
-          longitude: number
-          metadata?: Json | null
-          status?: string
+          doctor_email: string
+          id?: number
+          patient_id?: number | null
+          status?: string | null
           updated_at?: string | null
         }
         Update: {
-          agent_id?: string
+          assigned_at?: string | null
           created_at?: string | null
-          id?: string
-          last_update?: string | null
-          latitude?: number
-          longitude?: number
-          metadata?: Json | null
-          status?: string
+          doctor_email?: string
+          id?: number
+          patient_id?: number | null
+          status?: string | null
           updated_at?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "agent_locations_agent_id_fkey"
-            columns: ["agent_id"]
+            foreignKeyName: "doctor_assignments_patient_id_fkey"
+            columns: ["patient_id"]
             isOneToOne: false
-            referencedRelation: "parking_agents"
+            referencedRelation: "patients"
             referencedColumns: ["id"]
           },
         ]
       }
-      audit_logs: {
+      intervention_reports: {
         Row: {
-          action: string
-          created_at: string
-          details: Json | null
-          id: string
-          ip_address: string | null
-          resource_id: string | null
-          resource_type: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          action: string
-          created_at?: string
-          details?: Json | null
-          id?: string
-          ip_address?: string | null
-          resource_id?: string | null
-          resource_type: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          action?: string
-          created_at?: string
-          details?: Json | null
-          id?: string
-          ip_address?: string | null
-          resource_id?: string | null
-          resource_type?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      blacklisted_plates: {
-        Row: {
-          added_by: string | null
-          created_at: string
-          evidence_urls: string[] | null
-          expiry_date: string | null
-          id: string
-          license_plate: string
-          metadata: Json | null
+          analysis_id: number | null
+          created_at: string | null
+          detected_symptoms: string[] | null
+          id: number
           notes: string | null
-          reason: string
-          status: string
-          updated_at: string
-          zone_id: string | null
+          patient_id: number | null
+          prescription_id: number | null
+          provisional_diagnosis: string | null
+          updated_at: string | null
+          vital_signs: Json | null
         }
         Insert: {
-          added_by?: string | null
-          created_at?: string
-          evidence_urls?: string[] | null
-          expiry_date?: string | null
-          id?: string
-          license_plate: string
-          metadata?: Json | null
+          analysis_id?: number | null
+          created_at?: string | null
+          detected_symptoms?: string[] | null
+          id?: never
           notes?: string | null
-          reason: string
-          status?: string
-          updated_at?: string
-          zone_id?: string | null
+          patient_id?: number | null
+          prescription_id?: number | null
+          provisional_diagnosis?: string | null
+          updated_at?: string | null
+          vital_signs?: Json | null
         }
         Update: {
-          added_by?: string | null
-          created_at?: string
-          evidence_urls?: string[] | null
-          expiry_date?: string | null
-          id?: string
-          license_plate?: string
-          metadata?: Json | null
+          analysis_id?: number | null
+          created_at?: string | null
+          detected_symptoms?: string[] | null
+          id?: never
           notes?: string | null
-          reason?: string
-          status?: string
-          updated_at?: string
-          zone_id?: string | null
+          patient_id?: number | null
+          prescription_id?: number | null
+          provisional_diagnosis?: string | null
+          updated_at?: string | null
+          vital_signs?: Json | null
         }
         Relationships: [
           {
-            foreignKeyName: "blacklisted_plates_zone_id_fkey"
-            columns: ["zone_id"]
+            foreignKeyName: "intervention_reports_analysis_id_fkey"
+            columns: ["analysis_id"]
             isOneToOne: false
-            referencedRelation: "parking_zones"
+            referencedRelation: "analysis_history"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "intervention_reports_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "intervention_reports_prescription_id_fkey"
+            columns: ["prescription_id"]
+            isOneToOne: false
+            referencedRelation: "prescriptions"
             referencedColumns: ["id"]
           },
         ]
       }
-      fine_notifications: {
+      pathologies: {
         Row: {
           created_at: string
-          delivery_status: string | null
-          id: string
-          infraction_id: string
-          metadata: Json | null
-          notification_type: string
-          recipient_email: string
-          recipient_phone: string | null
-          sent_at: string | null
-          status: string
-          template_id: string | null
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          delivery_status?: string | null
-          id?: string
-          infraction_id: string
-          metadata?: Json | null
-          notification_type?: string
-          recipient_email: string
-          recipient_phone?: string | null
-          sent_at?: string | null
-          status?: string
-          template_id?: string | null
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          delivery_status?: string | null
-          id?: string
-          infraction_id?: string
-          metadata?: Json | null
-          notification_type?: string
-          recipient_email?: string
-          recipient_phone?: string | null
-          sent_at?: string | null
-          status?: string
-          template_id?: string | null
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "fine_notifications_infraction_id_fkey"
-            columns: ["infraction_id"]
-            isOneToOne: false
-            referencedRelation: "infractions"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "fine_notifications_template_id_fkey"
-            columns: ["template_id"]
-            isOneToOne: false
-            referencedRelation: "message_templates"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      global_settings: {
-        Row: {
-          category: string
-          created_at: string
-          description: string | null
-          id: string
-          key: string
-          updated_at: string
-          value: Json
-        }
-        Insert: {
-          category: string
-          created_at?: string
-          description?: string | null
-          id?: string
-          key: string
-          updated_at?: string
-          value: Json
-        }
-        Update: {
-          category?: string
-          created_at?: string
-          description?: string | null
-          id?: string
-          key?: string
-          updated_at?: string
-          value?: Json
-        }
-        Relationships: []
-      }
-      infraction_disputes: {
-        Row: {
-          contact_email: string
-          contact_phone: string | null
-          created_at: string
-          id: string
-          infraction_id: string
-          reason: string
-          resolution_notes: string | null
-          status: string
-          updated_at: string
-        }
-        Insert: {
-          contact_email: string
-          contact_phone?: string | null
-          created_at?: string
-          id?: string
-          infraction_id: string
-          reason: string
-          resolution_notes?: string | null
-          status?: string
-          updated_at?: string
-        }
-        Update: {
-          contact_email?: string
-          contact_phone?: string | null
-          created_at?: string
-          id?: string
-          infraction_id?: string
-          reason?: string
-          resolution_notes?: string | null
-          status?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "infraction_disputes_infraction_id_fkey"
-            columns: ["infraction_id"]
-            isOneToOne: false
-            referencedRelation: "infractions"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      infraction_types: {
-        Row: {
-          amount: number
-          created_at: string
-          description: string | null
-          id: string
+          id: number
+          linked_symptoms: string[] | null
           name: string
-          status: string
+          recommended_treatments: string[] | null
           updated_at: string
         }
         Insert: {
-          amount?: number
           created_at?: string
-          description?: string | null
-          id?: string
+          id?: number
+          linked_symptoms?: string[] | null
           name: string
-          status?: string
+          recommended_treatments?: string[] | null
           updated_at?: string
         }
         Update: {
-          amount?: number
           created_at?: string
-          description?: string | null
-          id?: string
+          id?: number
+          linked_symptoms?: string[] | null
           name?: string
-          status?: string
+          recommended_treatments?: string[] | null
           updated_at?: string
         }
         Relationships: []
       }
-      infractions: {
+      patients: {
         Row: {
-          agent_id: string
-          amount: number
+          admission_date: string | null
+          age: number | null
           created_at: string
-          description: string | null
-          evidence_url: string | null
-          id: string
-          image_evidence_urls: string[] | null
-          infraction_type: string
-          license_plate: string
-          location: string
-          payment_status: string
-          status: string
-          updated_at: string
-          video_evidence_url: string | null
-          zone_id: string
-        }
-        Insert: {
-          agent_id: string
-          amount: number
-          created_at?: string
-          description?: string | null
-          evidence_url?: string | null
-          id?: string
-          image_evidence_urls?: string[] | null
-          infraction_type: string
-          license_plate: string
-          location: string
-          payment_status?: string
-          status?: string
-          updated_at?: string
-          video_evidence_url?: string | null
-          zone_id: string
-        }
-        Update: {
-          agent_id?: string
-          amount?: number
-          created_at?: string
-          description?: string | null
-          evidence_url?: string | null
-          id?: string
-          image_evidence_urls?: string[] | null
-          infraction_type?: string
-          license_plate?: string
-          location?: string
-          payment_status?: string
-          status?: string
-          updated_at?: string
-          video_evidence_url?: string | null
-          zone_id?: string
-        }
-        Relationships: []
-      }
-      message_templates: {
-        Row: {
-          content: string
-          created_at: string
-          id: string
-          name: string
-          status: string
-          subject: string | null
-          type: string
-          updated_at: string
-          variables: Json | null
-        }
-        Insert: {
-          content: string
-          created_at?: string
-          id?: string
-          name: string
-          status?: string
-          subject?: string | null
-          type: string
-          updated_at?: string
-          variables?: Json | null
-        }
-        Update: {
-          content?: string
-          created_at?: string
-          id?: string
-          name?: string
-          status?: string
-          subject?: string | null
-          type?: string
-          updated_at?: string
-          variables?: Json | null
-        }
-        Relationships: []
-      }
-      messages: {
-        Row: {
-          content: string
-          created_at: string
-          id: string
-          metadata: Json | null
-          recipient_id: string | null
-          sender_id: string
-          status: string
-          type: string
-          updated_at: string
-          voice_url: string | null
-        }
-        Insert: {
-          content: string
-          created_at?: string
-          id?: string
-          metadata?: Json | null
-          recipient_id?: string | null
-          sender_id: string
-          status?: string
-          type: string
-          updated_at?: string
-          voice_url?: string | null
-        }
-        Update: {
-          content?: string
-          created_at?: string
-          id?: string
-          metadata?: Json | null
-          recipient_id?: string | null
-          sender_id?: string
-          status?: string
-          type?: string
-          updated_at?: string
-          voice_url?: string | null
-        }
-        Relationships: []
-      }
-      notifications: {
-        Row: {
-          created_at: string
-          id: string
-          message: string
-          metadata: Json | null
-          priority: string
-          read_at: string | null
-          scheduled_for: string | null
-          status: string
-          title: string
-          type: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          message: string
-          metadata?: Json | null
-          priority?: string
-          read_at?: string | null
-          scheduled_for?: string | null
-          status?: string
-          title: string
-          type: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          message?: string
-          metadata?: Json | null
-          priority?: string
-          read_at?: string | null
-          scheduled_for?: string | null
-          status?: string
-          title?: string
-          type?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      parking_agents: {
-        Row: {
-          assigned_zones: string[] | null
-          badge_number: string
-          created_at: string
-          email: string
-          first_name: string
-          id: string
-          last_location: Json | null
-          last_name: string
-          performance_metrics: Json | null
-          performance_score: number | null
-          phone: string
-          status: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          assigned_zones?: string[] | null
-          badge_number: string
-          created_at?: string
-          email: string
-          first_name: string
-          id?: string
-          last_location?: Json | null
-          last_name: string
-          performance_metrics?: Json | null
-          performance_score?: number | null
-          phone: string
-          status?: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          assigned_zones?: string[] | null
-          badge_number?: string
-          created_at?: string
-          email?: string
-          first_name?: string
-          id?: string
-          last_location?: Json | null
-          last_name?: string
-          performance_metrics?: Json | null
-          performance_score?: number | null
-          phone?: string
-          status?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      parking_zones: {
-        Row: {
-          capacity: number
-          coordinates: Json
-          created_at: string
-          description: string | null
-          features: Json | null
-          id: string
-          location: string
-          name: string
-          operating_hours: Json
-          pricing: Json
-          status: string
-          updated_at: string
-        }
-        Insert: {
-          capacity: number
-          coordinates: Json
-          created_at?: string
-          description?: string | null
-          features?: Json | null
-          id?: string
-          location: string
-          name: string
-          operating_hours?: Json
-          pricing?: Json
-          status?: string
-          updated_at?: string
-        }
-        Update: {
-          capacity?: number
-          coordinates?: Json
-          created_at?: string
-          description?: string | null
-          features?: Json | null
-          id?: string
-          location?: string
-          name?: string
-          operating_hours?: Json
-          pricing?: Json
-          status?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      payments: {
-        Row: {
-          amount: number
-          created_at: string
-          currency: string
-          id: string
-          metadata: Json | null
-          payment_method: string
-          reference_id: string
-          reference_type: string
-          status: string
-          type: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          amount: number
-          created_at?: string
-          currency?: string
-          id?: string
-          metadata?: Json | null
-          payment_method: string
-          reference_id: string
-          reference_type: string
-          status?: string
-          type: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          amount?: number
-          created_at?: string
-          currency?: string
-          id?: string
-          metadata?: Json | null
-          payment_method?: string
-          reference_id?: string
-          reference_type?: string
-          status?: string
-          type?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      profiles: {
-        Row: {
-          avatar_url: string | null
-          created_at: string
-          first_name: string | null
-          id: string
-          last_name: string | null
-          phone: string | null
-          role: string | null
+          discharge_date: string | null
+          external_id: string | null
+          full_name: string | null
+          gender: string | null
+          id: number
           status: string | null
+          triage_status: string | null
           updated_at: string
         }
         Insert: {
-          avatar_url?: string | null
+          admission_date?: string | null
+          age?: number | null
           created_at?: string
-          first_name?: string | null
-          id: string
-          last_name?: string | null
-          phone?: string | null
-          role?: string | null
+          discharge_date?: string | null
+          external_id?: string | null
+          full_name?: string | null
+          gender?: string | null
+          id?: number
           status?: string | null
+          triage_status?: string | null
           updated_at?: string
         }
         Update: {
-          avatar_url?: string | null
+          admission_date?: string | null
+          age?: number | null
           created_at?: string
-          first_name?: string | null
-          id?: string
-          last_name?: string | null
-          phone?: string | null
-          role?: string | null
+          discharge_date?: string | null
+          external_id?: string | null
+          full_name?: string | null
+          gender?: string | null
+          id?: number
           status?: string | null
+          triage_status?: string | null
           updated_at?: string
         }
         Relationships: []
       }
-      promotions: {
+      prescription_history: {
         Row: {
-          code: string
-          created_at: string
-          current_uses: number | null
-          end_date: string
-          id: string
-          max_uses: number | null
-          name: string
-          start_date: string
-          status: string
-          subscription_type: string | null
-          type: string
-          updated_at: string
-          value: number
-          zone_id: string | null
+          created_at: string | null
+          follow_up: Json | null
+          id: number
+          instructions: Json | null
+          is_favorite: boolean | null
+          medications: Json
+          modified_at: string | null
+          precautions: Json | null
+          prescription_id: number | null
         }
         Insert: {
-          code: string
-          created_at?: string
-          current_uses?: number | null
-          end_date: string
-          id?: string
-          max_uses?: number | null
-          name: string
-          start_date: string
-          status?: string
-          subscription_type?: string | null
-          type: string
-          updated_at?: string
-          value: number
-          zone_id?: string | null
+          created_at?: string | null
+          follow_up?: Json | null
+          id?: number
+          instructions?: Json | null
+          is_favorite?: boolean | null
+          medications: Json
+          modified_at?: string | null
+          precautions?: Json | null
+          prescription_id?: number | null
         }
         Update: {
-          code?: string
-          created_at?: string
-          current_uses?: number | null
-          end_date?: string
-          id?: string
-          max_uses?: number | null
-          name?: string
-          start_date?: string
-          status?: string
-          subscription_type?: string | null
-          type?: string
-          updated_at?: string
-          value?: number
-          zone_id?: string | null
-        }
-        Relationships: []
-      }
-      reservations: {
-        Row: {
-          amount: number
-          created_at: string
-          end_time: string
-          id: string
-          payment_status: string
-          start_time: string
-          status: string
-          updated_at: string
-          user_id: string
-          zone_id: string
-        }
-        Insert: {
-          amount: number
-          created_at?: string
-          end_time: string
-          id?: string
-          payment_status?: string
-          start_time: string
-          status?: string
-          updated_at?: string
-          user_id: string
-          zone_id: string
-        }
-        Update: {
-          amount?: number
-          created_at?: string
-          end_time?: string
-          id?: string
-          payment_status?: string
-          start_time?: string
-          status?: string
-          updated_at?: string
-          user_id?: string
-          zone_id?: string
-        }
-        Relationships: []
-      }
-      role_permissions: {
-        Row: {
-          created_at: string
-          id: string
-          permissions: string[]
-          resource: string
-          role: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          permissions: string[]
-          resource: string
-          role: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          permissions?: string[]
-          resource?: string
-          role?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      scheduled_reports: {
-        Row: {
-          created_at: string
-          created_by: string | null
-          format: string
-          id: string
-          last_run: string | null
-          name: string
-          parameters: Json | null
-          recipients: Json
-          schedule: string
-          status: string
-          type: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          created_by?: string | null
-          format: string
-          id?: string
-          last_run?: string | null
-          name: string
-          parameters?: Json | null
-          recipients?: Json
-          schedule: string
-          status?: string
-          type: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          created_by?: string | null
-          format?: string
-          id?: string
-          last_run?: string | null
-          name?: string
-          parameters?: Json | null
-          recipients?: Json
-          schedule?: string
-          status?: string
-          type?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      security_alerts: {
-        Row: {
-          alert_type: string
-          created_at: string
-          description: string
-          id: string
-          metadata: Json | null
-          resolved_at: string | null
-          resolved_by: string | null
-          severity: string
-          status: string
-          updated_at: string
-        }
-        Insert: {
-          alert_type: string
-          created_at?: string
-          description: string
-          id?: string
-          metadata?: Json | null
-          resolved_at?: string | null
-          resolved_by?: string | null
-          severity: string
-          status?: string
-          updated_at?: string
-        }
-        Update: {
-          alert_type?: string
-          created_at?: string
-          description?: string
-          id?: string
-          metadata?: Json | null
-          resolved_at?: string | null
-          resolved_by?: string | null
-          severity?: string
-          status?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      services: {
-        Row: {
-          address: string
-          created_at: string
-          description: string | null
-          email: string | null
-          id: string
-          latitude: number
-          longitude: number
-          name: string
-          phone: string | null
-          rating: number | null
-          status: string
-          type: string
-          updated_at: string
-          website: string | null
-        }
-        Insert: {
-          address: string
-          created_at?: string
-          description?: string | null
-          email?: string | null
-          id?: string
-          latitude: number
-          longitude: number
-          name: string
-          phone?: string | null
-          rating?: number | null
-          status?: string
-          type: string
-          updated_at?: string
-          website?: string | null
-        }
-        Update: {
-          address?: string
-          created_at?: string
-          description?: string | null
-          email?: string | null
-          id?: string
-          latitude?: number
-          longitude?: number
-          name?: string
-          phone?: string | null
-          rating?: number | null
-          status?: string
-          type?: string
-          updated_at?: string
-          website?: string | null
-        }
-        Relationships: []
-      }
-      subscriptions: {
-        Row: {
-          amount: number
-          created_at: string
-          end_date: string
-          id: string
-          payment_status: string
-          start_date: string
-          status: string
-          type: string
-          updated_at: string
-          user_id: string
-          zone_id: string
-        }
-        Insert: {
-          amount: number
-          created_at?: string
-          end_date: string
-          id?: string
-          payment_status?: string
-          start_date: string
-          status?: string
-          type: string
-          updated_at?: string
-          user_id: string
-          zone_id: string
-        }
-        Update: {
-          amount?: number
-          created_at?: string
-          end_date?: string
-          id?: string
-          payment_status?: string
-          start_date?: string
-          status?: string
-          type?: string
-          updated_at?: string
-          user_id?: string
-          zone_id?: string
-        }
-        Relationships: []
-      }
-      user_status_logs: {
-        Row: {
-          action: string
-          created_at: string
-          id: string
-          reason: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          action: string
-          created_at?: string
-          id?: string
-          reason: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          action?: string
-          created_at?: string
-          id?: string
-          reason?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      users: {
-        Row: {
-          created_at: string
-          email: string
-          first_name: string | null
-          id: string
-          last_ip: string | null
-          last_login: string | null
-          last_name: string | null
-          metadata: Json | null
-          phone: string | null
-          role: string
-          status: string
-          updated_at: string
-          zone: string | null
-        }
-        Insert: {
-          created_at?: string
-          email: string
-          first_name?: string | null
-          id?: string
-          last_ip?: string | null
-          last_login?: string | null
-          last_name?: string | null
-          metadata?: Json | null
-          phone?: string | null
-          role?: string
-          status?: string
-          updated_at?: string
-          zone?: string | null
-        }
-        Update: {
-          created_at?: string
-          email?: string
-          first_name?: string | null
-          id?: string
-          last_ip?: string | null
-          last_login?: string | null
-          last_name?: string | null
-          metadata?: Json | null
-          phone?: string | null
-          role?: string
-          status?: string
-          updated_at?: string
-          zone?: string | null
+          created_at?: string | null
+          follow_up?: Json | null
+          id?: number
+          instructions?: Json | null
+          is_favorite?: boolean | null
+          medications?: Json
+          modified_at?: string | null
+          precautions?: Json | null
+          prescription_id?: number | null
         }
         Relationships: [
           {
-            foreignKeyName: "users_zone_fkey"
-            columns: ["zone"]
+            foreignKeyName: "prescription_history_prescription_id_fkey"
+            columns: ["prescription_id"]
             isOneToOne: false
-            referencedRelation: "parking_zones"
+            referencedRelation: "prescriptions"
             referencedColumns: ["id"]
           },
         ]
       }
-      vehicles: {
+      prescription_logs: {
         Row: {
-          brand: string
-          color: string
-          created_at: string
-          id: string
-          license_plate: string
-          model: string
-          status: string
-          type: string
-          updated_at: string
-          user_id: string
-          year: number | null
+          created_at: string | null
+          id: number
+          modification_type: string
+          modified_by: string | null
+          new_state: Json | null
+          prescription_id: number | null
+          previous_state: Json | null
         }
         Insert: {
-          brand: string
-          color: string
-          created_at?: string
-          id?: string
-          license_plate: string
-          model: string
-          status?: string
-          type?: string
-          updated_at?: string
-          user_id: string
-          year?: number | null
+          created_at?: string | null
+          id?: never
+          modification_type: string
+          modified_by?: string | null
+          new_state?: Json | null
+          prescription_id?: number | null
+          previous_state?: Json | null
         }
         Update: {
-          brand?: string
-          color?: string
+          created_at?: string | null
+          id?: never
+          modification_type?: string
+          modified_by?: string | null
+          new_state?: Json | null
+          prescription_id?: number | null
+          previous_state?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prescription_logs_prescription_id_fkey"
+            columns: ["prescription_id"]
+            isOneToOne: false
+            referencedRelation: "prescriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      prescription_validations: {
+        Row: {
+          created_at: string | null
+          id: number
+          prescription_id: number | null
+          validated_by: string | null
+          validation_date: string | null
+          validation_notes: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: never
+          prescription_id?: number | null
+          validated_by?: string | null
+          validation_date?: string | null
+          validation_notes?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: never
+          prescription_id?: number | null
+          validated_by?: string | null
+          validation_date?: string | null
+          validation_notes?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prescription_validations_prescription_id_fkey"
+            columns: ["prescription_id"]
+            isOneToOne: false
+            referencedRelation: "prescriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      prescriptions: {
+        Row: {
+          created_at: string
+          diagnosis: string
+          id: number
+          instructions: Json | null
+          medications: Json
+          symptoms: Json
+          updated_at: string
+          validation_status: string | null
+        }
+        Insert: {
           created_at?: string
-          id?: string
-          license_plate?: string
-          model?: string
-          status?: string
-          type?: string
+          diagnosis: string
+          id?: number
+          instructions?: Json | null
+          medications: Json
+          symptoms: Json
           updated_at?: string
-          user_id?: string
-          year?: number | null
+          validation_status?: string | null
+        }
+        Update: {
+          created_at?: string
+          diagnosis?: string
+          id?: number
+          instructions?: Json | null
+          medications?: Json
+          symptoms?: Json
+          updated_at?: string
+          validation_status?: string | null
+        }
+        Relationships: []
+      }
+      symptoms: {
+        Row: {
+          associated_pathologies: string[] | null
+          created_at: string
+          id: number
+          initial_recommendations: string | null
+          name: string
+          severity: number | null
+          updated_at: string
+        }
+        Insert: {
+          associated_pathologies?: string[] | null
+          created_at?: string
+          id?: number
+          initial_recommendations?: string | null
+          name: string
+          severity?: number | null
+          updated_at?: string
+        }
+        Update: {
+          associated_pathologies?: string[] | null
+          created_at?: string
+          id?: number
+          initial_recommendations?: string | null
+          name?: string
+          severity?: number | null
+          updated_at?: string
         }
         Relationships: []
       }
