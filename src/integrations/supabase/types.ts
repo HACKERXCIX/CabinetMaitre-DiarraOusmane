@@ -47,6 +47,53 @@ export type Database = {
           },
         ]
       }
+      appointments: {
+        Row: {
+          created_at: string | null
+          desired_date: string
+          email: string
+          full_name: string
+          id: string
+          message: string | null
+          phone: string
+          property_id: string | null
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          desired_date: string
+          email: string
+          full_name: string
+          id?: string
+          message?: string | null
+          phone: string
+          property_id?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          desired_date?: string
+          email?: string
+          full_name?: string
+          id?: string
+          message?: string | null
+          phone?: string
+          property_id?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointments_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       doctor_assignments: {
         Row: {
           assigned_at: string | null
@@ -142,6 +189,47 @@ export type Database = {
             columns: ["prescription_id"]
             isOneToOne: false
             referencedRelation: "prescriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      menus: {
+        Row: {
+          content: string | null
+          created_at: string | null
+          id: string
+          order_index: number
+          parent_id: string | null
+          slug: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          order_index: number
+          parent_id?: string | null
+          slug: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          order_index?: number
+          parent_id?: string | null
+          slug?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "menus_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "menus"
             referencedColumns: ["id"]
           },
         ]
@@ -362,6 +450,116 @@ export type Database = {
           symptoms?: Json
           updated_at?: string
           validation_status?: string | null
+        }
+        Relationships: []
+      }
+      properties: {
+        Row: {
+          architecture_style: string | null
+          created_at: string | null
+          deleted_at: string | null
+          description: string
+          id: string
+          images: string[]
+          location: string
+          price: number
+          property_type: string
+          rooms: number | null
+          surface: number
+          title: string
+          type: string
+          updated_at: string | null
+          videos: string[] | null
+        }
+        Insert: {
+          architecture_style?: string | null
+          created_at?: string | null
+          deleted_at?: string | null
+          description: string
+          id?: string
+          images?: string[]
+          location: string
+          price: number
+          property_type: string
+          rooms?: number | null
+          surface: number
+          title: string
+          type: string
+          updated_at?: string | null
+          videos?: string[] | null
+        }
+        Update: {
+          architecture_style?: string | null
+          created_at?: string | null
+          deleted_at?: string | null
+          description?: string
+          id?: string
+          images?: string[]
+          location?: string
+          price?: number
+          property_type?: string
+          rooms?: number | null
+          surface?: number
+          title?: string
+          type?: string
+          updated_at?: string | null
+          videos?: string[] | null
+        }
+        Relationships: []
+      }
+      property_visits: {
+        Row: {
+          id: string
+          property_id: string | null
+          search_criteria: Json | null
+          visited_at: string | null
+          visitor_ip: string | null
+        }
+        Insert: {
+          id?: string
+          property_id?: string | null
+          search_criteria?: Json | null
+          visited_at?: string | null
+          visitor_ip?: string | null
+        }
+        Update: {
+          id?: string
+          property_id?: string | null
+          search_criteria?: Json | null
+          visited_at?: string | null
+          visitor_ip?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_visits_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      site_visits: {
+        Row: {
+          id: string
+          page: string
+          user_agent: string | null
+          visited_at: string | null
+          visitor_ip: string | null
+        }
+        Insert: {
+          id?: string
+          page: string
+          user_agent?: string | null
+          visited_at?: string | null
+          visitor_ip?: string | null
+        }
+        Update: {
+          id?: string
+          page?: string
+          user_agent?: string | null
+          visited_at?: string | null
+          visitor_ip?: string | null
         }
         Relationships: []
       }
