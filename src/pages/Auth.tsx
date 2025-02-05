@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -31,7 +32,13 @@ const Auth = () => {
         });
         if (error) throw error;
         toast.success("Connexion réussie !");
-        navigate("/");
+        
+        // Si c'est l'administrateur, rediriger vers la page admin
+        if (email === "mdiarraousmane@gmail.com") {
+          navigate("/admin");
+        } else {
+          navigate("/");
+        }
       }
     } catch (error: any) {
       toast.error(error.message);
