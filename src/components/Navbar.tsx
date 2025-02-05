@@ -1,18 +1,47 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const Navbar = () => {
+  const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+
+    // Check for user session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      subscription.unsubscribe();
+    };
   }, []);
+
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      toast.success("Déconnexion réussie");
+      navigate("/");
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
 
   return (
     <nav
@@ -45,9 +74,21 @@ const Navbar = () => {
             <NavLink to="/immobilier">Immobilier</NavLink>
             <NavLink to="/equipe">Notre Équipe</NavLink>
             <NavLink to="/contact">Contact</NavLink>
-            <button className="px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent/90 transition-colors font-inter text-sm">
-              Prendre RDV
-            </button>
+            {user ? (
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent/90 transition-colors font-inter text-sm"
+              >
+                Se déconnecter
+              </button>
+            ) : (
+              <Link
+                to="/auth"
+                className="px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent/90 transition-colors font-inter text-sm"
+              >
+                Se connecter
+              </Link>
+            )}
           </div>
 
           {/* Mobile menu */}
@@ -58,9 +99,21 @@ const Navbar = () => {
                 <NavLink to="/immobilier">Immobilier</NavLink>
                 <NavLink to="/equipe">Notre Équipe</NavLink>
                 <NavLink to="/contact">Contact</NavLink>
-                <button className="px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent/90 transition-colors font-inter text-sm">
-                  Prendre RDV
-                </button>
+                {user ? (
+                  <button
+                    onClick={handleLogout}
+                    className="px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent/90 transition-colors font-inter text-sm"
+                  >
+                    Se déconnecter
+                  </button>
+                ) : (
+                  <Link
+                    to="/auth"
+                    className="px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent/90 transition-colors font-inter text-sm"
+                  >
+                    Se connecter
+                  </Link>
+                )}
               </div>
             </div>
           )}

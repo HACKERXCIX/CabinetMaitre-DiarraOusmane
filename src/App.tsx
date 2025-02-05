@@ -8,6 +8,7 @@ import Services from "./pages/Services";
 import RealEstate from "./pages/RealEstate";
 import PropertyDetails from "./pages/PropertyDetails";
 import NotFound from "./pages/NotFound";
+import Auth from "./pages/Auth";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +23,7 @@ const App = () => (
           <Route path="/services" element={<Services />} />
           <Route path="/immobilier" element={<RealEstate />} />
           <Route path="/immobilier/:id" element={<PropertyDetails />} />
+          <Route path="/auth" element={<Auth />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
