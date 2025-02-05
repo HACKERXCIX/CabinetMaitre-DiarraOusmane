@@ -1,14 +1,29 @@
+
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [user, setUser] = useState(null);
+
+  const { data: isAdmin } = useQuery({
+    queryKey: ["checkAdminNav"],
+    queryFn: async () => {
+      if (!user) return false;
+      const { data, error } = await supabase.rpc('has_role', {
+        _role: 'admin'
+      });
+      if (error) return false;
+      return data;
+    },
+    enabled: !!user
+  });
 
   useEffect(() => {
     const handleScroll = () => {
@@ -74,6 +89,7 @@ const Navbar = () => {
             <NavLink to="/immobilier">Immobilier</NavLink>
             <NavLink to="/equipe">Notre Équipe</NavLink>
             <NavLink to="/contact">Contact</NavLink>
+            {isAdmin && <NavLink to="/admin">Administration</NavLink>}
             {user ? (
               <button
                 onClick={handleLogout}
@@ -99,6 +115,7 @@ const Navbar = () => {
                 <NavLink to="/immobilier">Immobilier</NavLink>
                 <NavLink to="/equipe">Notre Équipe</NavLink>
                 <NavLink to="/contact">Contact</NavLink>
+                {isAdmin && <NavLink to="/admin">Administration</NavLink>}
                 {user ? (
                   <button
                     onClick={handleLogout}
