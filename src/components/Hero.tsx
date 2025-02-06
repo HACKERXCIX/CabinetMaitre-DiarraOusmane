@@ -1,7 +1,17 @@
 import { motion } from "framer-motion";
 import { Gavel, Building, Briefcase } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Hero = () => {
+  const navigate = useNavigate();
+
+  const handleAppointment = () => {
+    const appointmentSection = document.getElementById('appointment-section');
+    if (appointmentSection) {
+      appointmentSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <section className="min-h-screen flex items-center justify-center bg-gradient-to-b from-accent/5 to-white pt-20">
       <div className="container mx-auto px-4">
@@ -59,10 +69,16 @@ const Hero = () => {
             transition={{ duration: 0.6, delay: 0.8 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            <button className="px-8 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-inter">
+            <button 
+              onClick={() => navigate('/services')}
+              className="px-8 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-inter"
+            >
               Nos Services
             </button>
-            <button className="px-8 py-3 bg-accent text-white rounded-lg hover:bg-accent/90 transition-colors font-inter">
+            <button 
+              onClick={handleAppointment}
+              className="px-8 py-3 bg-accent text-white rounded-lg hover:bg-accent/90 transition-colors font-inter"
+            >
               Prendre RDV
             </button>
           </motion.div>

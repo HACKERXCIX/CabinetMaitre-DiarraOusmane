@@ -84,7 +84,7 @@ const AppointmentForm = () => {
         .from('payment_receipts')
         .getPublicUrl(fileName);
 
-      // Create appointment
+      // Create appointment with full_name
       const { error: appointmentError } = await supabase
         .from('appointments')
         .insert({
