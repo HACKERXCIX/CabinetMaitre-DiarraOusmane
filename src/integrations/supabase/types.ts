@@ -49,36 +49,63 @@ export type Database = {
       }
       appointments: {
         Row: {
+          appointment_time: string
+          client_type: string
+          consultation_object: string
+          consultation_summary: string
+          consultation_type: string
           created_at: string | null
           desired_date: string
           email: string
+          first_name: string
           full_name: string
           id: string
+          last_name: string
           message: string | null
+          online_platform: string | null
+          payment_receipt_url: string
           phone: string
           property_id: string | null
           status: string
           updated_at: string | null
         }
         Insert: {
+          appointment_time?: string
+          client_type?: string
+          consultation_object?: string
+          consultation_summary?: string
+          consultation_type?: string
           created_at?: string | null
           desired_date: string
           email: string
+          first_name?: string
           full_name: string
           id?: string
+          last_name?: string
           message?: string | null
+          online_platform?: string | null
+          payment_receipt_url?: string
           phone: string
           property_id?: string | null
           status?: string
           updated_at?: string | null
         }
         Update: {
+          appointment_time?: string
+          client_type?: string
+          consultation_object?: string
+          consultation_summary?: string
+          consultation_type?: string
           created_at?: string | null
           desired_date?: string
           email?: string
+          first_name?: string
           full_name?: string
           id?: string
+          last_name?: string
           message?: string | null
+          online_platform?: string | null
+          payment_receipt_url?: string
           phone?: string
           property_id?: string | null
           status?: string

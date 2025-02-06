@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
+import AppointmentForm from "../components/AppointmentForm";
 import { motion } from "framer-motion";
 
 const Index = () => {
@@ -46,6 +47,22 @@ const Index = () => {
                 <ServiceCard key={service.title} {...service} index={index} />
               ))}
             </div>
+          </div>
+        </section>
+
+        <section className="py-20 bg-gray-50">
+          <div className="container mx-auto px-4">
+            <div className="max-w-4xl mx-auto text-center mb-16">
+              <motion.h2
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="text-4xl font-playfair font-bold text-primary mb-6"
+              >
+                Prendre Rendez-vous
+              </motion.h2>
+            </div>
+            <AppointmentForm />
           </div>
         </section>
       </main>
