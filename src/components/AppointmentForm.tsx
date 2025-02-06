@@ -90,6 +90,7 @@ const AppointmentForm = () => {
         .insert({
           first_name: values.firstName,
           last_name: values.lastName,
+          full_name: `${values.firstName} ${values.lastName}`,
           email: values.email,
           phone: values.phone,
           client_type: values.clientType,

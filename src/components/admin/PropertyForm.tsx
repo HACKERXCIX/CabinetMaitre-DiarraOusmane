@@ -74,19 +74,23 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
       }
 
       // Insert property data
-      const { error } = await supabase.from('properties').insert({
-        title: formData.get('title'),
-        description: formData.get('description'),
-        type: formData.get('type'),
-        property_type: formData.get('property_type'),
-        price: formData.get('price'),
-        location: formData.get('location'),
-        surface: formData.get('surface'),
-        rooms: formData.get('rooms'),
-        architecture_style: formData.get('architecture_style'),
+      const propertyData = {
+        title: String(formData.get('title')),
+        description: String(formData.get('description')),
+        type: String(formData.get('type')),
+        property_type: String(formData.get('property_type')),
+        price: Number(formData.get('price')),
+        location: String(formData.get('location')),
+        surface: Number(formData.get('surface')),
+        rooms: formData.get('rooms') ? Number(formData.get('rooms')) : null,
+        architecture_style: formData.get('architecture_style') ? String(formData.get('architecture_style')) : null,
         images: imageUrls,
         videos: videoUrls,
-      });
+      };
+
+      const { error } = await supabase
+        .from('properties')
+        .insert(propertyData);
 
       if (error) throw error;
 
