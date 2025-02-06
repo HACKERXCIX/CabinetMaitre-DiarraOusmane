@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,9 +10,21 @@ import AppointmentsList from "@/components/admin/AppointmentsList";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
+interface Property {
+  id: string;
+  title: string;
+  location: string;
+  price: number;
+  deleted_at: string | null;
+}
+
+interface VisitStat {
+  visited_at: string;
+}
+
 const Admin = () => {
   const navigate = useNavigate();
-  const [properties, setProperties] = useState<any[]>([]);
+  const [properties, setProperties] = useState<Property[]>([]);
 
   // Vérifier si l'utilisateur est admin
   const { data: isAdmin, isLoading: isCheckingAdmin } = useQuery({
@@ -35,7 +46,7 @@ const Admin = () => {
         .from('site_visits')
         .select('*');
       if (error) throw error;
-      return data;
+      return data as VisitStat[];
     }
   });
 
@@ -45,18 +56,18 @@ const Admin = () => {
   }, []);
 
   const loadProperties = async () => {
-    const { data, error } = await supabase
-      .from('properties')
-      .select('*')
-      .is('deleted_at', null)
-      .order('created_at', { ascending: false });
+    try {
+      const { data, error } = await supabase
+        .from('properties')
+        .select('*')
+        .is('deleted_at', null)
+        .order('created_at', { ascending: false });
 
-    if (error) {
-      toast.error('Erreur lors du chargement des biens');
-      return;
+      if (error) throw error;
+      setProperties(data || []);
+    } catch (error: any) {
+      toast.error('Erreur lors du chargement des biens: ' + error.message);
     }
-
-    setProperties(data || []);
   };
 
   // Supprimer une propriété (soft delete)
@@ -88,6 +99,7 @@ const Admin = () => {
   useEffect(() => {
     if (!isCheckingAdmin && !isAdmin) {
       navigate('/');
+      toast.error("Accès non autorisé");
     }
   }, [isAdmin, isCheckingAdmin, navigate]);
 
@@ -96,8 +108,8 @@ const Admin = () => {
   }
 
   // Formater les données pour les graphiques
-  const formatVisitData = (visits: any[]) => {
-    return visits?.reduce((acc: any[], visit: any) => {
+  const formatVisitData = (visits: VisitStat[] = []) => {
+    return visits.reduce((acc: { name: string; visits: number }[], visit) => {
       const date = new Date(visit.visited_at).toLocaleDateString();
       const existing = acc.find(item => item.name === date);
       if (existing) {
@@ -106,7 +118,7 @@ const Admin = () => {
         acc.push({ name: date, visits: 1 });
       }
       return acc;
-    }, []) || [];
+    }, []);
   };
 
   return (
@@ -160,7 +172,6 @@ const Admin = () => {
                 data={formatVisitData(visitStats)}
                 title="Visites du site"
               />
-              {/* Ajoutez d'autres graphiques ici selon les besoins */}
             </div>
           </TabsContent>
 
