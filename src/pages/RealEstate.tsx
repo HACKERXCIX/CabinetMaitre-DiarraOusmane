@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import { Input } from "@/components/ui/input";
@@ -25,73 +26,64 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { Link } from "react-router-dom";
 import { Eye } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Property {
-  id: number;
+  id: string;
   title: string;
-  type: "Immeuble" | "Maison" | "Appartement" | "Terrain" | "Bureau";
-  status: "À vendre" | "À louer";
+  type: string;
+  property_type: string;
   price: number;
   location: string;
   surface: number;
-  rooms: number;
+  rooms: number | null;
   description: string;
   images: string[];
+  videos: string[];
+  architecture_style: string | null;
 }
 
-const properties: Property[] = [
-  {
-    id: 1,
-    title: "Villa moderne avec piscine",
-    type: "Maison",
-    status: "À vendre",
-    price: 150000000,
-    location: "Cocody",
-    surface: 350,
-    rooms: 5,
-    description: "Magnifique villa moderne avec piscine, jardin paysager et vue panoramique.",
-    images: ["/placeholder.svg"],
-  },
-  {
-    id: 2,
-    title: "Appartement de standing",
-    type: "Appartement",
-    status: "À louer",
-    price: 500000,
-    location: "Plateau",
-    surface: 120,
-    rooms: 3,
-    description: "Bel appartement rénové avec vue sur la ville, parking sécurisé.",
-    images: ["/placeholder.svg"],
-  },
-  {
-    id: 3,
-    title: "Terrain constructible",
-    type: "Terrain",
-    status: "À vendre",
-    price: 75000000,
-    location: "Bingerville",
-    surface: 1000,
-    rooms: 0,
-    description: "Grand terrain plat, viabilisé, idéal pour projet immobilier.",
-    images: ["/placeholder.svg"],
-  },
-];
-
 const RealEstate = () => {
+  const [properties, setProperties] = useState<Property[]>([]);
   const [filters, setFilters] = useState({
     type: "",
-    status: "",
+    property_type: "",
     minPrice: "",
     maxPrice: "",
     location: "",
   });
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    loadProperties();
+  }, []);
+
+  const loadProperties = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('properties')
+        .select('*')
+        .is('deleted_at', null)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setProperties(data || []);
+    } catch (error: any) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de charger les biens immobiliers: " + error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const filteredProperties = properties.filter((property) => {
     if (filters.type && property.type !== filters.type) return false;
-    if (filters.status && property.status !== filters.status) return false;
+    if (filters.property_type && property.property_type !== filters.property_type) return false;
     if (filters.minPrice && property.price < Number(filters.minPrice)) return false;
     if (filters.maxPrice && property.price > Number(filters.maxPrice)) return false;
     if (
@@ -102,7 +94,7 @@ const RealEstate = () => {
     return true;
   });
 
-  const handleVisitRequest = (propertyId: number) => {
+  const handleVisitRequest = async (propertyId: string) => {
     if (!selectedDate) {
       toast({
         title: "Date requise",
@@ -112,11 +104,29 @@ const RealEstate = () => {
       return;
     }
 
-    // Ici, vous pourriez ajouter l'intégration avec Google Calendar
-    toast({
-      title: "Demande envoyée",
-      description: "Nous vous contacterons rapidement pour confirmer la visite.",
-    });
+    // Enregistrer la demande de visite
+    try {
+      const { error } = await supabase
+        .from('appointments')
+        .insert([{
+          property_id: propertyId,
+          desired_date: selectedDate,
+          status: 'pending'
+        }]);
+
+      if (error) throw error;
+
+      toast({
+        title: "Demande envoyée",
+        description: "Nous vous contacterons rapidement pour confirmer la visite.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Erreur",
+        description: "Impossible d'enregistrer la demande: " + error.message,
+        variant: "destructive",
+      });
+    }
   };
 
   const formatPrice = (price: number) => {
@@ -154,21 +164,21 @@ const RealEstate = () => {
             value={filters.type}
             onChange={(e) => setFilters({ ...filters, type: e.target.value })}
           >
-            <option value="">Type de bien</option>
-            <option value="Immeuble">Immeuble</option>
-            <option value="Maison">Maison</option>
-            <option value="Appartement">Appartement</option>
-            <option value="Terrain">Terrain</option>
-            <option value="Bureau">Bureau</option>
+            <option value="">Type d'annonce</option>
+            <option value="vente">Vente</option>
+            <option value="location">Location</option>
           </select>
           <select
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-            value={filters.status}
-            onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+            value={filters.property_type}
+            onChange={(e) => setFilters({ ...filters, property_type: e.target.value })}
           >
-            <option value="">Status</option>
-            <option value="À vendre">À vendre</option>
-            <option value="À louer">À louer</option>
+            <option value="">Type de bien</option>
+            <option value="maison">Maison</option>
+            <option value="appartement">Appartement</option>
+            <option value="terrain">Terrain</option>
+            <option value="commerce">Commerce</option>
+            <option value="bureau">Bureau</option>
           </select>
           <Input
             type="number"
@@ -189,94 +199,103 @@ const RealEstate = () => {
         </div>
 
         {/* Liste des biens */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProperties.map((property) => (
-            <motion.div
-              key={property.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              <Card className="h-full hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <img
-                    src={property.images[0]}
-                    alt={property.title}
-                    className="w-full h-48 object-cover rounded-t-lg"
-                  />
-                  <CardTitle className="text-xl font-playfair">
-                    {property.title}
-                  </CardTitle>
-                  <CardDescription>
-                    {property.location} - {property.surface}m² - {property.rooms}{" "}
-                    pièces
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-2xl font-bold text-primary mb-4">
-                    {property.status === "À vendre"
-                      ? formatPrice(property.price)
-                      : `${formatPrice(property.price)}/mois`}
-                  </p>
-                  <p className="text-muted-foreground">{property.description}</p>
-                </CardContent>
-                <CardFooter className="flex gap-2">
-                  <Link to={`/immobilier/${property.id}`} className="flex-1">
-                    <Button className="w-full" variant="outline">
-                      <Eye className="mr-2" />
-                      Voir détails
-                    </Button>
-                  </Link>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button className="flex-1">Demander une visite</Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px]">
-                      <DialogHeader>
-                        <DialogTitle>Demande de visite</DialogTitle>
-                        <DialogDescription>
-                          Sélectionnez une date et remplissez le formulaire pour demander une visite.
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="grid gap-4 py-4">
-                        <div className="grid gap-2">
-                          <Label>Date souhaitée pour la visite</Label>
-                          <Calendar
-                            mode="single"
-                            selected={selectedDate}
-                            onSelect={setSelectedDate}
-                            className="rounded-md border"
-                          />
+        {isLoading ? (
+          <div className="text-center py-12">Chargement...</div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredProperties.map((property) => (
+              <motion.div
+                key={property.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <Card className="h-full hover:shadow-lg transition-shadow">
+                  <CardHeader>
+                    <div className="relative aspect-video mb-4">
+                      {property.images && property.images.length > 0 ? (
+                        <img
+                          src={property.images[0]}
+                          alt={property.title}
+                          className="w-full h-full object-cover rounded-t-lg"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-muted rounded-t-lg flex items-center justify-center">
+                          Pas d'image
                         </div>
-                        <div className="grid gap-2">
-                          <Label htmlFor="name">Nom complet</Label>
-                          <Input id="name" required />
+                      )}
+                    </div>
+                    <CardTitle className="text-xl font-playfair">
+                      {property.title}
+                    </CardTitle>
+                    <CardDescription>
+                      {property.location} - {property.surface}m² - {property.rooms || 0} pièces
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-2xl font-bold text-primary mb-4">
+                      {formatPrice(property.price)}
+                    </p>
+                    <p className="text-muted-foreground">{property.description}</p>
+                  </CardContent>
+                  <CardFooter className="flex gap-2">
+                    <Link to={`/immobilier/${property.id}`} className="flex-1">
+                      <Button className="w-full" variant="outline">
+                        <Eye className="mr-2" />
+                        Voir détails
+                      </Button>
+                    </Link>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button className="flex-1">Demander une visite</Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[425px]">
+                        <DialogHeader>
+                          <DialogTitle>Demande de visite</DialogTitle>
+                          <DialogDescription>
+                            Sélectionnez une date et remplissez le formulaire pour demander une visite.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="grid gap-4 py-4">
+                          <div className="grid gap-2">
+                            <Label>Date souhaitée pour la visite</Label>
+                            <Calendar
+                              mode="single"
+                              selected={selectedDate}
+                              onSelect={setSelectedDate}
+                              className="rounded-md border"
+                            />
+                          </div>
+                          <div className="grid gap-2">
+                            <Label htmlFor="name">Nom complet</Label>
+                            <Input id="name" required />
+                          </div>
+                          <div className="grid gap-2">
+                            <Label htmlFor="email">Email</Label>
+                            <Input id="email" type="email" required />
+                          </div>
+                          <div className="grid gap-2">
+                            <Label htmlFor="phone">Téléphone</Label>
+                            <Input id="phone" type="tel" required />
+                          </div>
+                          <div className="grid gap-2">
+                            <Label htmlFor="message">Message (optionnel)</Label>
+                            <Textarea id="message" />
+                          </div>
+                          <Button 
+                            onClick={() => handleVisitRequest(property.id)}
+                            className="w-full"
+                          >
+                            Envoyer la demande
+                          </Button>
                         </div>
-                        <div className="grid gap-2">
-                          <Label htmlFor="email">Email</Label>
-                          <Input id="email" type="email" required />
-                        </div>
-                        <div className="grid gap-2">
-                          <Label htmlFor="phone">Téléphone</Label>
-                          <Input id="phone" type="tel" required />
-                        </div>
-                        <div className="grid gap-2">
-                          <Label htmlFor="message">Message (optionnel)</Label>
-                          <Textarea id="message" />
-                        </div>
-                        <Button 
-                          onClick={() => handleVisitRequest(property.id)}
-                          className="w-full"
-                        >
-                          Envoyer la demande
-                        </Button>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-                </CardFooter>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
+                      </DialogContent>
+                    </Dialog>
+                  </CardFooter>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </main>
     </div>
   );
