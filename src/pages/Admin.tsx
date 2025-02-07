@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -45,6 +44,7 @@ interface PropertySearchStat {
 const Admin = () => {
   const navigate = useNavigate();
   const [properties, setProperties] = useState<Property[]>([]);
+  const [selectedProperty, setSelectedProperty] = useState<Property | undefined>(undefined);
 
   // Vérifier si l'utilisateur est admin
   const { data: isAdmin, isLoading: isCheckingAdmin } = useQuery({
@@ -173,6 +173,10 @@ const Admin = () => {
     return <div className="min-h-screen flex items-center justify-center">Chargement...</div>;
   }
 
+  const handleEdit = (property: Property) => {
+    setSelectedProperty(property);
+  };
+
   return (
     <div className="min-h-screen py-20 px-4">
       <div className="container mx-auto mt-16">
@@ -188,8 +192,25 @@ const Admin = () => {
 
           <TabsContent value="properties" className="space-y-6">
             <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold mb-4">Ajouter un bien</h2>
-              <PropertyForm onSuccess={loadProperties} />
+              <h2 className="text-xl font-semibold mb-4">
+                {selectedProperty ? "Modifier un bien" : "Ajouter un bien"}
+              </h2>
+              <PropertyForm 
+                property={selectedProperty} 
+                onSuccess={() => {
+                  loadProperties();
+                  setSelectedProperty(undefined);
+                }} 
+              />
+              {selectedProperty && (
+                <Button 
+                  variant="outline" 
+                  className="mt-4"
+                  onClick={() => setSelectedProperty(undefined)}
+                >
+                  Annuler la modification
+                </Button>
+              )}
             </div>
 
             <div className="bg-white rounded-lg shadow p-6">
@@ -221,12 +242,20 @@ const Admin = () => {
                         </div>
                       )}
                     </div>
-                    <Button
-                      variant="destructive"
-                      onClick={() => handleDelete(property.id)}
-                    >
-                      Supprimer
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        onClick={() => handleEdit(property)}
+                      >
+                        Modifier
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        onClick={() => handleDelete(property.id)}
+                      >
+                        Supprimer
+                      </Button>
+                    </div>
                   </div>
                 ))}
               </div>

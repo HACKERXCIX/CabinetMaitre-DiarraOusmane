@@ -1,5 +1,5 @@
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,15 +7,47 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
+interface Property {
+  id?: string;
+  title: string;
+  description: string;
+  type: string;
+  property_type: string;
+  price: number;
+  location: string;
+  surface: number;
+  rooms: number | null;
+  architecture_style: string | null;
+  images: string[];
+  videos: string[];
+}
+
 interface PropertyFormProps {
+  property?: Property;
   onSuccess?: () => void;
 }
 
-const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
+const PropertyForm = ({ property, onSuccess }: PropertyFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [images, setImages] = useState<FileList | null>(null);
   const [videos, setVideos] = useState<FileList | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
+
+  useEffect(() => {
+    if (property && formRef.current) {
+      // Pré-remplir le formulaire avec les données existantes
+      const form = formRef.current;
+      form.title.value = property.title;
+      form.description.value = property.description;
+      form.type.value = property.type;
+      form.property_type.value = property.property_type;
+      form.price.value = property.price;
+      form.location.value = property.location;
+      form.surface.value = property.surface;
+      if (property.rooms) form.rooms.value = property.rooms;
+      if (property.architecture_style) form.architecture_style.value = property.architecture_style;
+    }
+  }, [property]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -26,7 +58,7 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
       const imageUrls: string[] = [];
       const videoUrls: string[] = [];
 
-      // Upload images
+      // Upload new images if any
       if (images) {
         for (let i = 0; i < images.length; i++) {
           const file = images[i];
@@ -50,7 +82,7 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
         }
       }
 
-      // Upload videos
+      // Upload new videos if any
       if (videos) {
         for (let i = 0; i < videos.length; i++) {
           const file = videos[i];
@@ -74,7 +106,6 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
         }
       }
 
-      // Insert property data
       const propertyData = {
         title: String(formData.get('title')),
         description: String(formData.get('description')),
@@ -85,23 +116,36 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
         surface: Number(formData.get('surface')),
         rooms: formData.get('rooms') ? Number(formData.get('rooms')) : null,
         architecture_style: formData.get('architecture_style') ? String(formData.get('architecture_style')) : null,
-        images: imageUrls,
-        videos: videoUrls,
+        images: imageUrls.length > 0 ? imageUrls : (property?.images || []),
+        videos: videoUrls.length > 0 ? videoUrls : (property?.videos || []),
       };
 
-      const { error } = await supabase
-        .from('properties')
-        .insert(propertyData);
+      let error;
+
+      if (property?.id) {
+        // Mise à jour d'une propriété existante
+        const { error: updateError } = await supabase
+          .from('properties')
+          .update(propertyData)
+          .eq('id', property.id);
+        error = updateError;
+      } else {
+        // Création d'une nouvelle propriété
+        const { error: insertError } = await supabase
+          .from('properties')
+          .insert(propertyData);
+        error = insertError;
+      }
 
       if (error) throw error;
 
-      toast.success('Bien immobilier ajouté avec succès');
+      toast.success(property?.id ? 'Bien immobilier modifié avec succès' : 'Bien immobilier ajouté avec succès');
       formRef.current?.reset();
       setImages(null);
       setVideos(null);
       onSuccess?.();
     } catch (error: any) {
-      toast.error('Erreur lors de l\'ajout du bien: ' + error.message);
+      toast.error('Erreur lors de l\'opération: ' + error.message);
     } finally {
       setIsLoading(false);
     }
@@ -170,7 +214,7 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
         </div>
 
         <div>
-          <Label htmlFor="images">Images</Label>
+          <Label htmlFor="images">Images {property && "(laissez vide pour conserver les images existantes)"}</Label>
           <Input
             id="images"
             type="file"
@@ -178,10 +222,22 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
             multiple
             onChange={(e) => setImages(e.target.files)}
           />
+          {property && property.images.length > 0 && (
+            <div className="mt-2 flex gap-2 overflow-x-auto">
+              {property.images.map((image, index) => (
+                <img
+                  key={index}
+                  src={image}
+                  alt={`Image ${index + 1}`}
+                  className="w-20 h-20 object-cover rounded"
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         <div>
-          <Label htmlFor="videos">Vidéos</Label>
+          <Label htmlFor="videos">Vidéos {property && "(laissez vide pour conserver les vidéos existantes)"}</Label>
           <Input
             id="videos"
             type="file"
@@ -189,6 +245,11 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
             multiple
             onChange={(e) => setVideos(e.target.files)}
           />
+          {property && property.videos && property.videos.length > 0 && (
+            <div className="mt-2">
+              {property.videos.length} vidéo(s) existante(s)
+            </div>
+          )}
         </div>
       </div>
 
@@ -198,7 +259,7 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
       </div>
 
       <Button type="submit" disabled={isLoading}>
-        {isLoading ? "Ajout en cours..." : "Ajouter le bien"}
+        {isLoading ? "Traitement en cours..." : property?.id ? "Modifier le bien" : "Ajouter le bien"}
       </Button>
     </form>
   );
