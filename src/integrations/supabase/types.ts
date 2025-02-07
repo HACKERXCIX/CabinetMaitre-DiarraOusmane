@@ -534,6 +534,50 @@ export type Database = {
         }
         Relationships: []
       }
+      property_search_stats: {
+        Row: {
+          architecture_preference: string | null
+          id: string
+          location_preference: string | null
+          price_range_max: number | null
+          price_range_min: number | null
+          property_id: string | null
+          search_date: string | null
+          search_type: string | null
+          visitor_ip: string | null
+        }
+        Insert: {
+          architecture_preference?: string | null
+          id?: string
+          location_preference?: string | null
+          price_range_max?: number | null
+          price_range_min?: number | null
+          property_id?: string | null
+          search_date?: string | null
+          search_type?: string | null
+          visitor_ip?: string | null
+        }
+        Update: {
+          architecture_preference?: string | null
+          id?: string
+          location_preference?: string | null
+          price_range_max?: number | null
+          price_range_min?: number | null
+          property_id?: string | null
+          search_date?: string | null
+          search_type?: string | null
+          visitor_ip?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_search_stats_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       property_visits: {
         Row: {
           id: string
