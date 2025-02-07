@@ -17,6 +17,14 @@ interface Property {
   location: string;
   price: number;
   deleted_at: string | null;
+  description: string;
+  type: string;
+  property_type: string;
+  surface: number;
+  rooms: number | null;
+  architecture_style: string | null;
+  images: string[];
+  videos: string[];
 }
 
 interface VisitStat {
@@ -78,10 +86,6 @@ const Admin = () => {
   });
 
   // Charger les propriétés
-  useEffect(() => {
-    loadProperties();
-  }, []);
-
   const loadProperties = async () => {
     try {
       const { data, error } = await supabase
@@ -96,6 +100,10 @@ const Admin = () => {
       toast.error('Erreur lors du chargement des biens: ' + error.message);
     }
   };
+
+  useEffect(() => {
+    loadProperties();
+  }, []);
 
   // Supprimer une propriété (soft delete)
   const handleDelete = async (id: string) => {
@@ -192,11 +200,26 @@ const Admin = () => {
                     key={property.id}
                     className="p-4 border rounded-lg flex items-center justify-between"
                   >
-                    <div>
+                    <div className="flex-1">
                       <h3 className="font-medium">{property.title}</h3>
                       <p className="text-sm text-gray-600">
-                        {property.location} - {property.price} FCFA
+                        {property.location} - {property.price.toLocaleString()} FCFA
                       </p>
+                      <p className="text-sm text-gray-600">
+                        {property.surface} m² - {property.rooms || 0} pièces
+                      </p>
+                      {property.images.length > 0 && (
+                        <div className="mt-2 flex gap-2">
+                          {property.images.map((image, index) => (
+                            <img
+                              key={index}
+                              src={image}
+                              alt={`${property.title} - Image ${index + 1}`}
+                              className="w-16 h-16 object-cover rounded"
+                            />
+                          ))}
+                        </div>
+                      )}
                     </div>
                     <Button
                       variant="destructive"

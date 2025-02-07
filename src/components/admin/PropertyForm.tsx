@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,6 +15,7 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [images, setImages] = useState<FileList | null>(null);
   const [videos, setVideos] = useState<FileList | null>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -95,10 +96,10 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
       if (error) throw error;
 
       toast.success('Bien immobilier ajouté avec succès');
-      onSuccess?.();
-      e.currentTarget.reset();
+      formRef.current?.reset();
       setImages(null);
       setVideos(null);
+      onSuccess?.();
     } catch (error: any) {
       toast.error('Erreur lors de l\'ajout du bien: ' + error.message);
     } finally {
@@ -107,7 +108,7 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <Label htmlFor="title">Titre</Label>
