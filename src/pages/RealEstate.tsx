@@ -53,6 +53,12 @@ const RealEstate = () => {
     location: "",
   });
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [formData, setFormData] = useState({
+    full_name: "",
+    email: "",
+    phone: "",
+    message: "",
+  });
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
 
@@ -104,21 +110,42 @@ const RealEstate = () => {
       return;
     }
 
-    // Enregistrer la demande de visite
+    if (!formData.full_name || !formData.email || !formData.phone) {
+      toast({
+        title: "Informations manquantes",
+        description: "Veuillez remplir tous les champs obligatoires.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('appointments')
-        .insert([{
+        .insert({
           property_id: propertyId,
-          desired_date: selectedDate,
-          status: 'pending'
-        }]);
+          desired_date: selectedDate.toISOString(),
+          status: 'pending',
+          full_name: formData.full_name,
+          email: formData.email,
+          phone: formData.phone,
+          message: formData.message || null
+        });
 
       if (error) throw error;
 
       toast({
         title: "Demande envoyée",
         description: "Nous vous contacterons rapidement pour confirmer la visite.",
+      });
+
+      // Reset form
+      setSelectedDate(undefined);
+      setFormData({
+        full_name: "",
+        email: "",
+        phone: "",
+        message: "",
       });
     } catch (error: any) {
       toast({
@@ -131,6 +158,14 @@ const RealEstate = () => {
 
   const formatPrice = (price: number) => {
     return `${price.toLocaleString()} FCFA`;
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [id]: value
+    }));
   };
 
   return (
@@ -266,20 +301,41 @@ const RealEstate = () => {
                             />
                           </div>
                           <div className="grid gap-2">
-                            <Label htmlFor="name">Nom complet</Label>
-                            <Input id="name" required />
+                            <Label htmlFor="full_name">Nom complet</Label>
+                            <Input 
+                              id="full_name" 
+                              value={formData.full_name}
+                              onChange={handleInputChange}
+                              required 
+                            />
                           </div>
                           <div className="grid gap-2">
                             <Label htmlFor="email">Email</Label>
-                            <Input id="email" type="email" required />
+                            <Input 
+                              id="email" 
+                              type="email" 
+                              value={formData.email}
+                              onChange={handleInputChange}
+                              required 
+                            />
                           </div>
                           <div className="grid gap-2">
                             <Label htmlFor="phone">Téléphone</Label>
-                            <Input id="phone" type="tel" required />
+                            <Input 
+                              id="phone" 
+                              type="tel" 
+                              value={formData.phone}
+                              onChange={handleInputChange}
+                              required 
+                            />
                           </div>
                           <div className="grid gap-2">
                             <Label htmlFor="message">Message (optionnel)</Label>
-                            <Textarea id="message" />
+                            <Textarea 
+                              id="message" 
+                              value={formData.message}
+                              onChange={handleInputChange}
+                            />
                           </div>
                           <Button 
                             onClick={() => handleVisitRequest(property.id)}
@@ -302,3 +358,4 @@ const RealEstate = () => {
 };
 
 export default RealEstate;
+
