@@ -9,6 +9,7 @@ import MenuEditor from "@/components/admin/MenuEditor";
 import AppointmentsList from "@/components/admin/AppointmentsList";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import ServicesEditor from "@/components/admin/ServicesEditor";
 
 interface Property {
   id: string;
@@ -186,6 +187,7 @@ const Admin = () => {
           <TabsList>
             <TabsTrigger value="properties">Biens Immobiliers</TabsTrigger>
             <TabsTrigger value="stats">Statistiques</TabsTrigger>
+            <TabsTrigger value="services">Services</TabsTrigger>
             <TabsTrigger value="menus">Menus</TabsTrigger>
             <TabsTrigger value="appointments">Rendez-vous</TabsTrigger>
           </TabsList>
@@ -303,6 +305,12 @@ const Admin = () => {
                   </div>
                 </div>
               </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="services">
+            <div className="bg-white rounded-lg shadow p-6">
+              <ServicesEditor />
             </div>
           </TabsContent>
 
