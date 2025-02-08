@@ -35,17 +35,32 @@ const PropertyForm = ({ property, onSuccess }: PropertyFormProps) => {
 
   useEffect(() => {
     if (property && formRef.current) {
-      // Pré-remplir le formulaire avec les données existantes
       const form = formRef.current;
-      form.title.value = property.title;
-      form.description.value = property.description;
-      form.type.value = property.type;
-      form.property_type.value = property.property_type;
-      form.price.value = property.price;
-      form.location.value = property.location;
-      form.surface.value = property.surface;
-      if (property.rooms) form.rooms.value = property.rooms;
-      if (property.architecture_style) form.architecture_style.value = property.architecture_style;
+      const elements = form.elements as HTMLFormControlsCollection;
+      
+      // Type assertion to access form elements
+      const titleInput = elements.namedItem('title') as HTMLInputElement;
+      const descriptionInput = elements.namedItem('description') as HTMLTextAreaElement;
+      const typeInput = elements.namedItem('type') as HTMLSelectElement;
+      const propertyTypeInput = elements.namedItem('property_type') as HTMLSelectElement;
+      const priceInput = elements.namedItem('price') as HTMLInputElement;
+      const locationInput = elements.namedItem('location') as HTMLInputElement;
+      const surfaceInput = elements.namedItem('surface') as HTMLInputElement;
+      const roomsInput = elements.namedItem('rooms') as HTMLInputElement;
+      const architectureStyleInput = elements.namedItem('architecture_style') as HTMLInputElement;
+
+      // Set values safely
+      if (titleInput) titleInput.value = property.title;
+      if (descriptionInput) descriptionInput.value = property.description;
+      if (typeInput) typeInput.value = property.type;
+      if (propertyTypeInput) propertyTypeInput.value = property.property_type;
+      if (priceInput) priceInput.value = property.price.toString();
+      if (locationInput) locationInput.value = property.location;
+      if (surfaceInput) surfaceInput.value = property.surface.toString();
+      if (roomsInput && property.rooms) roomsInput.value = property.rooms.toString();
+      if (architectureStyleInput && property.architecture_style) {
+        architectureStyleInput.value = property.architecture_style;
+      }
     }
   }, [property]);
 
