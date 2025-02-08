@@ -1,17 +1,10 @@
 
 import { useEffect } from "react";
 import Navbar from "../components/Navbar";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import * as Icons from "lucide-react";
-import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import ServiceCard from "@/components/services/ServiceCard";
+import ServicesHeader from "@/components/services/ServicesHeader";
 
 interface Service {
   id: string;
@@ -39,13 +32,6 @@ const Services = () => {
     },
   });
 
-  const DynamicIcon = ({ name }: { name: string }) => {
-    const IconComponent = (Icons as any)[name];
-    return IconComponent ? (
-      <IconComponent className="w-10 h-10 text-primary" />
-    ) : null;
-  };
-
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
@@ -63,55 +49,10 @@ const Services = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       <main className="container mx-auto px-4 py-24">
-        <div className="max-w-4xl mx-auto text-center mb-16">
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-4xl font-playfair font-bold text-primary mb-6"
-          >
-            Nos Services
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-lg text-muted-foreground"
-          >
-            Une expertise complète au service de vos besoins juridiques et
-            administratifs
-          </motion.p>
-        </div>
-
+        <ServicesHeader />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {services.map((service, index) => (
-            <motion.div
-              key={service.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-            >
-              <Card className="h-full hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="mb-4">
-                    <DynamicIcon name={service.icon_name} />
-                  </div>
-                  <CardTitle className="text-xl font-playfair">
-                    {service.title}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-sm space-y-2">
-                    {service.description.map((item, i) => (
-                      <p key={i} className="flex items-start gap-2">
-                        <span className="text-primary mt-1">•</span>
-                        {item}
-                      </p>
-                    ))}
-                  </CardDescription>
-                </CardContent>
-              </Card>
-            </motion.div>
+            <ServiceCard key={service.id} {...service} index={index} />
           ))}
         </div>
       </main>
