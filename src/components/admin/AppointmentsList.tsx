@@ -11,10 +11,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const AppointmentsList = () => {
   const [appointments, setAppointments] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedReceipt, setSelectedReceipt] = useState<string | null>(null);
 
   useEffect(() => {
     loadAppointments();
@@ -59,15 +66,48 @@ const AppointmentsList = () => {
     }
   };
 
+  const getAppointmentType = (appointment: any) => {
+    if (appointment.property_id) {
+      return "Demande de visite";
+    } else {
+      return "Demande de consultation";
+    }
+  };
+
+  const formatTime = (time: string) => {
+    return new Date(`1970-01-01T${time}`).toLocaleTimeString('fr-FR', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
   return (
     <div className="space-y-6">
+      <Dialog open={!!selectedReceipt} onOpenChange={() => setSelectedReceipt(null)}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Reçu de paiement</DialogTitle>
+          </DialogHeader>
+          {selectedReceipt && (
+            <div className="mt-4">
+              <img 
+                src={selectedReceipt} 
+                alt="Reçu de paiement" 
+                className="w-full max-h-[600px] object-contain"
+              />
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Date</TableHead>
+            <TableHead>Date et Heure</TableHead>
             <TableHead>Client</TableHead>
             <TableHead>Bien</TableHead>
             <TableHead>Contact</TableHead>
+            <TableHead>Type</TableHead>
             <TableHead>Statut</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
@@ -76,36 +116,53 @@ const AppointmentsList = () => {
           {appointments.map((appointment) => (
             <TableRow key={appointment.id}>
               <TableCell>
-                {new Date(appointment.desired_date).toLocaleDateString()}
+                {new Date(appointment.desired_date).toLocaleDateString()} à {formatTime(appointment.appointment_time)}
               </TableCell>
               <TableCell>{appointment.full_name}</TableCell>
               <TableCell>
-                {appointment.properties?.title} - {appointment.properties?.location}
+                {appointment.properties?.title 
+                  ? `${appointment.properties.title} - ${appointment.properties.location}`
+                  : "Consultation"
+                }
               </TableCell>
               <TableCell>
                 {appointment.email}
                 <br />
                 {appointment.phone}
               </TableCell>
+              <TableCell>{getAppointmentType(appointment)}</TableCell>
               <TableCell>{appointment.status}</TableCell>
               <TableCell>
                 <div className="space-x-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    disabled={isLoading || appointment.status === 'approved'}
-                    onClick={() => updateStatus(appointment.id, 'approved')}
-                  >
-                    Approuver
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    disabled={isLoading || appointment.status === 'rejected'}
-                    onClick={() => updateStatus(appointment.id, 'rejected')}
-                  >
-                    Refuser
-                  </Button>
+                  {!appointment.property_id && appointment.payment_receipt_url && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setSelectedReceipt(appointment.payment_receipt_url)}
+                      className="mb-2"
+                    >
+                      Voir le reçu
+                    </Button>
+                  )}
+                  <div>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={isLoading || appointment.status === 'approved'}
+                      onClick={() => updateStatus(appointment.id, 'approved')}
+                    >
+                      Approuver
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={isLoading || appointment.status === 'rejected'}
+                      onClick={() => updateStatus(appointment.id, 'rejected')}
+                      className="ml-2"
+                    >
+                      Refuser
+                    </Button>
+                  </div>
                 </div>
               </TableCell>
             </TableRow>
