@@ -1,6 +1,5 @@
 
 import { Facebook, Instagram, Linkedin, Youtube, MessagesSquare } from "lucide-react";
-import { BrandTiktok } from "lucide-react";
 
 const Footer = () => {
   const socialLinks = [
@@ -28,11 +27,6 @@ const Footer = () => {
       name: "LinkedIn",
       icon: Linkedin,
       url: "https://linkedin.com/",
-    },
-    {
-      name: "TikTok",
-      icon: BrandTiktok,
-      url: "https://tiktok.com/",
     },
   ];
 
