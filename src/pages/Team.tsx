@@ -58,11 +58,20 @@ export default function Team() {
                   </div>
                 </div>
                 <div className="text-primary/80 space-y-4">
-                  <p>
-                    Spécialisé dans le droit des affaires et l'immobilier, Maître DIARRA accompagne ses clients dans leurs projets juridiques depuis plus de 15 ans.
+                  <h3 className="text-xl font-playfair font-bold text-primary mb-4">
+                    Une Approche Juridique Dynamique pour Réussir Vos Projets
+                  </h3>
+                  <p className="mb-4">
+                    Notre engagement ? Vous offrir une assistance juridique proactive et transparente, adaptée aux exigences de votre secteur.
                   </p>
-                  <p>
-                    Expert en droit civil et en transactions immobilières, il met son expertise au service de particuliers et d'entreprises pour garantir la sécurité de leurs opérations.
+                  <div className="space-y-2">
+                    <h4 className="text-lg font-semibold text-primary">✨ Nos points forts :</h4>
+                    <p>✔️ Une écoute attentive pour une parfaite compréhension de vos besoins.</p>
+                    <p>✔️ Une réactivité exemplaire face aux défis juridiques.</p>
+                    <p>✔️ Une expertise multidisciplinaire pour optimiser vos stratégies.</p>
+                  </div>
+                  <p className="mt-4 font-semibold">
+                    Cabinet Maître Diarra : votre partenaire de confiance pour un avenir sécurisé.
                   </p>
                 </div>
               </motion.div>
