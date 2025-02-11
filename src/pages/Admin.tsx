@@ -8,6 +8,7 @@ import ServicesEditor from "@/components/admin/ServicesEditor";
 import MenuEditor from "@/components/admin/MenuEditor";
 import AppointmentsList from "@/components/admin/AppointmentsList";
 import PropertiesTab from "@/components/admin/tabs/PropertiesTab";
+import PropertyTypesTab from "@/components/admin/tabs/PropertyTypesTab";
 import StatsTab from "@/components/admin/tabs/StatsTab";
 import { toast } from "sonner";
 
@@ -58,6 +59,7 @@ const Admin = () => {
         <Tabs defaultValue="properties" className="space-y-6">
           <TabsList>
             <TabsTrigger value="properties">Biens Immobiliers</TabsTrigger>
+            <TabsTrigger value="property-types">Types de Biens</TabsTrigger>
             <TabsTrigger value="stats">Statistiques</TabsTrigger>
             <TabsTrigger value="services">Services</TabsTrigger>
             <TabsTrigger value="menus">Menus</TabsTrigger>
@@ -66,6 +68,10 @@ const Admin = () => {
 
           <TabsContent value="properties">
             <PropertiesTab />
+          </TabsContent>
+
+          <TabsContent value="property-types">
+            <PropertyTypesTab />
           </TabsContent>
 
           <TabsContent value="stats">

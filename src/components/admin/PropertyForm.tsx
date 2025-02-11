@@ -22,6 +22,11 @@ interface Property {
   videos: string[];
 }
 
+interface PropertyType {
+  id: string;
+  name: string;
+}
+
 interface PropertyFormProps {
   property?: Property;
   onSuccess?: () => void;
@@ -31,7 +36,27 @@ const PropertyForm = ({ property, onSuccess }: PropertyFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [images, setImages] = useState<FileList | null>(null);
   const [videos, setVideos] = useState<FileList | null>(null);
+  const [propertyTypes, setPropertyTypes] = useState<PropertyType[]>([]);
   const formRef = useRef<HTMLFormElement>(null);
+
+  useEffect(() => {
+    // Charger les types de biens
+    const loadPropertyTypes = async () => {
+      const { data, error } = await supabase
+        .from("property_types")
+        .select("*")
+        .is("deleted_at", null)
+        .order("name");
+
+      if (error) {
+        toast.error("Erreur lors du chargement des types de biens");
+      } else {
+        setPropertyTypes(data || []);
+      }
+    };
+
+    loadPropertyTypes();
+  }, []);
 
   useEffect(() => {
     if (property && formRef.current) {
@@ -195,11 +220,11 @@ const PropertyForm = ({ property, onSuccess }: PropertyFormProps) => {
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             required
           >
-            <option value="maison">Maison</option>
-            <option value="appartement">Appartement</option>
-            <option value="terrain">Terrain</option>
-            <option value="commerce">Commerce</option>
-            <option value="bureau">Bureau</option>
+            {propertyTypes.map((type) => (
+              <option key={type.id} value={type.name}>
+                {type.name}
+              </option>
+            ))}
           </select>
         </div>
 
