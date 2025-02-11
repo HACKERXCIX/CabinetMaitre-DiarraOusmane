@@ -11,6 +11,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface Property {
   id: string;
@@ -32,6 +43,7 @@ const PropertiesTab = () => {
   const [properties, setProperties] = useState<Property[]>([]);
   const [selectedProperty, setSelectedProperty] = useState<Property | undefined>(undefined);
   const [filterStatus, setFilterStatus] = useState<"active" | "deleted" | "all">("active");
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     loadProperties();
@@ -39,6 +51,7 @@ const PropertiesTab = () => {
 
   const loadProperties = async () => {
     try {
+      setIsLoading(true);
       let query = supabase
         .from("properties")
         .select("*")
@@ -56,11 +69,14 @@ const PropertiesTab = () => {
       setProperties(data || []);
     } catch (error: any) {
       toast.error("Erreur lors du chargement des biens: " + error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleDelete = async (id: string) => {
     try {
+      setIsLoading(true);
       const { error } = await supabase
         .from("properties")
         .update({ deleted_at: new Date().toISOString() })
@@ -71,11 +87,14 @@ const PropertiesTab = () => {
       loadProperties();
     } catch (error: any) {
       toast.error("Erreur lors de la suppression: " + error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleRestore = async (id: string) => {
     try {
+      setIsLoading(true);
       const { error } = await supabase
         .from("properties")
         .update({ deleted_at: null })
@@ -86,11 +105,15 @@ const PropertiesTab = () => {
       loadProperties();
     } catch (error: any) {
       toast.error("Erreur lors de la restauration: " + error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleEdit = (property: Property) => {
     setSelectedProperty(property);
+    // Scroll to the top where the form is
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
@@ -136,7 +159,7 @@ const PropertiesTab = () => {
             <div
               key={property.id}
               className={`p-4 border rounded-lg flex flex-col md:flex-row md:items-center justify-between ${
-                property.deleted_at ? "bg-gray-50" : ""
+                property.deleted_at ? "bg-gray-50" : "hover:bg-gray-50 transition-colors"
               }`}
             >
               <div className="flex-1">
@@ -183,24 +206,72 @@ const PropertiesTab = () => {
                 )}
               </div>
               <div className="flex gap-2 mt-4 md:mt-0">
-                <Button variant="outline" onClick={() => handleEdit(property)}>
+                <Button 
+                  variant="outline" 
+                  onClick={() => handleEdit(property)}
+                  disabled={isLoading}
+                  className="hover:bg-primary hover:text-white transition-colors"
+                >
                   Modifier
                 </Button>
                 {property.deleted_at ? (
-                  <Button
-                    variant="outline"
-                    className="text-green-600 hover:text-green-700"
-                    onClick={() => handleRestore(property.id)}
-                  >
-                    Restaurer
-                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="text-green-600 hover:bg-green-600 hover:text-white transition-colors"
+                        disabled={isLoading}
+                      >
+                        Restaurer
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Restaurer ce bien ?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Cette action va rendre le bien à nouveau visible sur le site.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Annuler</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => handleRestore(property.id)}
+                          className="bg-green-600 hover:bg-green-700"
+                        >
+                          Restaurer
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 ) : (
-                  <Button
-                    variant="destructive"
-                    onClick={() => handleDelete(property.id)}
-                  >
-                    Supprimer
-                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="destructive"
+                        disabled={isLoading}
+                        className="hover:bg-red-700 transition-colors"
+                      >
+                        Supprimer
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Supprimer ce bien ?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Cette action masquera le bien du site. Vous pourrez le restaurer plus tard.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Annuler</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => handleDelete(property.id)}
+                          className="bg-red-600 hover:bg-red-700"
+                        >
+                          Supprimer
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 )}
               </div>
             </div>
