@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
@@ -283,7 +282,7 @@ const RealEstate = () => {
                       <DialogTrigger asChild>
                         <Button className="flex-1">Demander une visite</Button>
                       </DialogTrigger>
-                      <DialogContent className="sm:max-w-[425px]">
+                      <DialogContent className="sm:max-w-[425px] max-h-[80vh] overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-accent/20 hover:scrollbar-thumb-accent/30">
                         <DialogHeader>
                           <DialogTitle>Demande de visite</DialogTitle>
                           <DialogDescription>
@@ -358,4 +357,3 @@ const RealEstate = () => {
 };
 
 export default RealEstate;
-
