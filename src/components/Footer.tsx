@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import * as Icons from "lucide-react";
 import { LucideProps } from "lucide-react";
+import { motion } from "framer-motion";
 
 const TikTokIcon = () => (
   <svg 
@@ -55,6 +56,40 @@ const Footer = () => {
     <footer className="bg-primary py-8 mt-auto">
       <div className="container mx-auto px-4">
         <div className="flex flex-col items-center justify-center">
+          <div className="max-w-4xl text-center mb-12">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="text-center"
+              >
+                <p className="text-4xl font-playfair font-bold text-accent mb-2">40+</p>
+                <p className="text-white text-sm">ans d'expérience</p>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="text-center"
+              >
+                <p className="text-4xl font-playfair font-bold text-accent mb-2">4000+</p>
+                <p className="text-white text-sm">clients satisfaits</p>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                className="text-center"
+              >
+                <p className="text-4xl font-playfair font-bold text-accent mb-2">100%</p>
+                <p className="text-white text-sm">engagement</p>
+              </motion.div>
+            </div>
+            <p className="text-white/80 text-sm leading-relaxed max-w-3xl mx-auto">
+              Le Cabinet Maître Diarra se distingue par son engagement constant envers l'excellence et la rigueur. Notre réputation repose sur une expertise juridique éprouvée et un accompagnement sur mesure, garantissant des solutions efficaces et adaptées aux besoins de chacun.
+            </p>
+          </div>
           <div className="flex gap-6 mb-4">
             {socialLinks?.map((link) => (
               <a
