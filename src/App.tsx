@@ -14,6 +14,7 @@ import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
 import Team from "./pages/Team";
+import Contact from "./pages/Contact";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +47,7 @@ const App = () => {
             <Route path="/immobilier" element={<RealEstate />} />
             <Route path="/immobilier/:id" element={<PropertyDetails />} />
             <Route path="/equipe" element={<Team />} />
+            <Route path="/contact" element={<Contact />} />
             <Route 
               path="/auth" 
               element={session ? <Navigate to="/" /> : <Auth />} 
