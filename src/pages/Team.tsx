@@ -49,7 +49,6 @@ export default function Team() {
                     <h2 className="text-3xl font-playfair font-bold text-primary mb-2">
                       Maître DIARRA
                     </h2>
-                    <p className="text-lg text-accent mb-4">Avocat Principal</p>
                     <div className="flex flex-col gap-3">
                       <a
                         href="tel:+2250707843777"
