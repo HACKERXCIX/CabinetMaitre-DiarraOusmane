@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import Navbar from "../components/Navbar";
 import { motion } from "framer-motion";
-import { Mail, Phone, Award, BookOpen, Scale, Users } from "lucide-react";
+import { Mail, Phone, Award, Scale, Users } from "lucide-react";
 
 export default function Team() {
   useEffect(() => {
@@ -100,24 +100,6 @@ export default function Team() {
                         {domain}
                       </div>
                     ))}
-                  </div>
-                </div>
-
-                {/* Formation */}
-                <div className="bg-white p-8 rounded-2xl shadow-lg border border-accent/20">
-                  <h3 className="text-2xl font-playfair font-bold text-primary mb-6 flex items-center gap-3">
-                    <BookOpen className="w-6 h-6 text-accent" />
-                    Formation
-                  </h3>
-                  <div className="space-y-4">
-                    <div className="p-4 rounded-lg bg-accent/5">
-                      <h4 className="font-semibold text-lg text-primary mb-1">Master en Droit des Affaires</h4>
-                      <p className="text-primary/70">Université de Cocody, Abidjan</p>
-                    </div>
-                    <div className="p-4 rounded-lg bg-accent/5">
-                      <h4 className="font-semibold text-lg text-primary mb-1">CAPA (Certificat d'Aptitude à la Profession d'Avocat)</h4>
-                      <p className="text-primary/70">Barreau de Côte d'Ivoire</p>
-                    </div>
                   </div>
                 </div>
 
