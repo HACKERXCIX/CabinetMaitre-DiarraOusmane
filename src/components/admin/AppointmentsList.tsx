@@ -28,11 +28,29 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Download, FileSpreadsheet, FileText } from "lucide-react";
+import { FileSpreadsheet, FileText } from "lucide-react";
+
+interface Appointment {
+  id: string;
+  full_name: string;
+  email: string;
+  phone: string;
+  desired_date: string;
+  appointment_time: string;
+  status: 'pending' | 'approved' | 'rejected';
+  property_id: string | null;
+  payment_receipt_url: string | null;
+  properties?: {
+    title: string;
+    location: string;
+    type: string;
+  } | null;
+  created_at: string;
+}
 
 const AppointmentsList = () => {
-  const [appointments, setAppointments] = useState<any[]>([]);
-  const [filteredAppointments, setFilteredAppointments] = useState<any[]>([]);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [filteredAppointments, setFilteredAppointments] = useState<Appointment[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedReceipt, setSelectedReceipt] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -47,36 +65,35 @@ const AppointmentsList = () => {
   }, [statusFilter, searchQuery, appointments]);
 
   const loadAppointments = async () => {
-    const { data, error } = await supabase
-      .from('appointments')
-      .select(`
-        *,
-        properties (
-          title,
-          location,
-          type
-        )
-      `)
-      .order('created_at', { ascending: false });
+    try {
+      const { data, error } = await supabase
+        .from('appointments')
+        .select(`
+          *,
+          properties (
+            title,
+            location,
+            type
+          )
+        `)
+        .order('created_at', { ascending: false });
 
-    if (error) {
-      toast.error('Erreur lors du chargement des rendez-vous');
-      return;
+      if (error) throw error;
+
+      setAppointments(data || []);
+      setFilteredAppointments(data || []);
+    } catch (error: any) {
+      toast.error('Erreur lors du chargement des rendez-vous: ' + error.message);
     }
-
-    setAppointments(data);
-    setFilteredAppointments(data);
   };
 
   const filterAppointments = () => {
     let filtered = [...appointments];
 
-    // Filtre par statut
     if (statusFilter !== "all") {
       filtered = filtered.filter(app => app.status === statusFilter);
     }
 
-    // Filtre par recherche
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(app => 
@@ -90,45 +107,55 @@ const AppointmentsList = () => {
   };
 
   const exportToExcel = () => {
-    const data = filteredAppointments.map(app => ({
-      'Date': new Date(app.desired_date).toLocaleDateString(),
-      'Heure': formatTime(app.appointment_time),
-      'Client': app.full_name,
-      'Email': app.email,
-      'Téléphone': app.phone,
-      'Type': getAppointmentType(app),
-      'Bien': app.properties?.title || 'Consultation',
-      'Statut': app.status
-    }));
+    try {
+      const data = filteredAppointments.map(app => ({
+        'Date': new Date(app.desired_date).toLocaleDateString(),
+        'Heure': formatTime(app.appointment_time),
+        'Client': app.full_name,
+        'Email': app.email,
+        'Téléphone': app.phone,
+        'Type': getAppointmentType(app),
+        'Bien': app.properties?.title || 'Consultation',
+        'Statut': app.status
+      }));
 
-    const ws = xlsxUtils.json_to_sheet(data);
-    const wb = xlsxUtils.book_new();
-    xlsxUtils.book_append_sheet(wb, ws, "Rendez-vous");
-    writeFile(wb, "rendez-vous.xlsx");
+      const ws = xlsxUtils.json_to_sheet(data);
+      const wb = xlsxUtils.book_new();
+      xlsxUtils.book_append_sheet(wb, ws, "Rendez-vous");
+      writeFile(wb, "rendez-vous.xlsx");
+      toast.success('Export Excel réussi');
+    } catch (error: any) {
+      toast.error('Erreur lors de l\'export Excel: ' + error.message);
+    }
   };
 
   const exportToPDF = () => {
-    const doc = new jsPDF();
-    const tableData = filteredAppointments.map(app => [
-      new Date(app.desired_date).toLocaleDateString(),
-      formatTime(app.appointment_time),
-      app.full_name,
-      app.email,
-      app.phone,
-      getAppointmentType(app),
-      app.properties?.title || 'Consultation',
-      app.status
-    ]);
+    try {
+      const doc = new jsPDF();
+      const tableData = filteredAppointments.map(app => [
+        new Date(app.desired_date).toLocaleDateString(),
+        formatTime(app.appointment_time),
+        app.full_name,
+        app.email,
+        app.phone,
+        getAppointmentType(app),
+        app.properties?.title || 'Consultation',
+        app.status
+      ]);
 
-    autoTable(doc, {
-      head: [['Date', 'Heure', 'Client', 'Email', 'Téléphone', 'Type', 'Bien', 'Statut']],
-      body: tableData,
-    });
+      autoTable(doc, {
+        head: [['Date', 'Heure', 'Client', 'Email', 'Téléphone', 'Type', 'Bien', 'Statut']],
+        body: tableData,
+      });
 
-    doc.save('rendez-vous.pdf');
+      doc.save('rendez-vous.pdf');
+      toast.success('Export PDF réussi');
+    } catch (error: any) {
+      toast.error('Erreur lors de l\'export PDF: ' + error.message);
+    }
   };
 
-  const updateStatus = async (id: string, status: string) => {
+  const updateStatus = async (id: string, status: 'approved' | 'rejected') => {
     setIsLoading(true);
     try {
       const { error } = await supabase
@@ -137,8 +164,9 @@ const AppointmentsList = () => {
         .eq('id', id);
 
       if (error) throw error;
+      
       toast.success('Statut mis à jour avec succès');
-      loadAppointments();
+      await loadAppointments();
     } catch (error: any) {
       toast.error('Erreur: ' + error.message);
     } finally {
@@ -146,19 +174,19 @@ const AppointmentsList = () => {
     }
   };
 
-  const getAppointmentType = (appointment: any) => {
-    if (appointment.property_id) {
-      return "Demande de visite";
-    } else {
-      return "Demande de consultation";
-    }
+  const getAppointmentType = (appointment: Appointment) => {
+    return appointment.property_id ? "Demande de visite" : "Demande de consultation";
   };
 
   const formatTime = (time: string) => {
-    return new Date(`1970-01-01T${time}`).toLocaleTimeString('fr-FR', {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    try {
+      return new Date(`1970-01-01T${time}`).toLocaleTimeString('fr-FR', {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch (error) {
+      return time;
+    }
   };
 
   return (
@@ -212,75 +240,77 @@ const AppointmentsList = () => {
         </div>
       </div>
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Date et Heure</TableHead>
-            <TableHead>Client</TableHead>
-            <TableHead>Bien</TableHead>
-            <TableHead>Contact</TableHead>
-            <TableHead>Type</TableHead>
-            <TableHead>Statut</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {filteredAppointments.map((appointment) => (
-            <TableRow key={appointment.id}>
-              <TableCell>
-                {new Date(appointment.desired_date).toLocaleDateString()} à {formatTime(appointment.appointment_time)}
-              </TableCell>
-              <TableCell>{appointment.full_name}</TableCell>
-              <TableCell>
-                {appointment.properties?.title 
-                  ? `${appointment.properties.title} - ${appointment.properties.location}`
-                  : "Consultation"
-                }
-              </TableCell>
-              <TableCell>
-                {appointment.email}
-                <br />
-                {appointment.phone}
-              </TableCell>
-              <TableCell>{getAppointmentType(appointment)}</TableCell>
-              <TableCell>{appointment.status}</TableCell>
-              <TableCell>
-                <div className="space-x-2">
-                  {!appointment.property_id && appointment.payment_receipt_url && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setSelectedReceipt(appointment.payment_receipt_url)}
-                      className="mb-2"
-                    >
-                      Voir le reçu
-                    </Button>
-                  )}
-                  <div>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      disabled={isLoading || appointment.status === 'approved'}
-                      onClick={() => updateStatus(appointment.id, 'approved')}
-                    >
-                      Approuver
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      disabled={isLoading || appointment.status === 'rejected'}
-                      onClick={() => updateStatus(appointment.id, 'rejected')}
-                      className="ml-2"
-                    >
-                      Refuser
-                    </Button>
-                  </div>
-                </div>
-              </TableCell>
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Date et Heure</TableHead>
+              <TableHead>Client</TableHead>
+              <TableHead>Bien</TableHead>
+              <TableHead>Contact</TableHead>
+              <TableHead>Type</TableHead>
+              <TableHead>Statut</TableHead>
+              <TableHead>Actions</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {filteredAppointments.map((appointment) => (
+              <TableRow key={appointment.id}>
+                <TableCell>
+                  {new Date(appointment.desired_date).toLocaleDateString()} à {formatTime(appointment.appointment_time)}
+                </TableCell>
+                <TableCell>{appointment.full_name}</TableCell>
+                <TableCell>
+                  {appointment.properties?.title 
+                    ? `${appointment.properties.title} - ${appointment.properties.location}`
+                    : "Consultation"
+                  }
+                </TableCell>
+                <TableCell>
+                  {appointment.email}
+                  <br />
+                  {appointment.phone}
+                </TableCell>
+                <TableCell>{getAppointmentType(appointment)}</TableCell>
+                <TableCell>{appointment.status}</TableCell>
+                <TableCell>
+                  <div className="space-x-2">
+                    {!appointment.property_id && appointment.payment_receipt_url && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setSelectedReceipt(appointment.payment_receipt_url)}
+                        className="mb-2"
+                      >
+                        Voir le reçu
+                      </Button>
+                    )}
+                    <div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        disabled={isLoading || appointment.status === 'approved'}
+                        onClick={() => updateStatus(appointment.id, 'approved')}
+                      >
+                        Approuver
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        disabled={isLoading || appointment.status === 'rejected'}
+                        onClick={() => updateStatus(appointment.id, 'rejected')}
+                        className="ml-2"
+                      >
+                        Refuser
+                      </Button>
+                    </div>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 };
