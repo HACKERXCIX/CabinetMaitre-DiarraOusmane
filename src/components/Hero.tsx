@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { Gavel, Building, Briefcase } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -21,7 +22,7 @@ const Hero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <span className="inline-block px-4 py-1 mb-6 bg-accent/10 text-accent rounded-full font-inter text-sm">
+            <span className="invisible inline-block px-4 py-1 mb-6 bg-accent/10 text-accent rounded-full font-inter text-sm">
               Cabinet d'Avocats & Immobilier
             </span>
           </motion.div>
