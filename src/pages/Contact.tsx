@@ -4,7 +4,7 @@ import Navbar from "../components/Navbar";
 import { Mail, Phone, Clock, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
 
-const Contact = () => {
+export default function Contact() {
   useEffect(() => {
     document.title = "Cabinet Maître Diarra - Contact";
   }, []);
@@ -50,11 +50,17 @@ const Contact = () => {
                   <div>
                     <h2 className="font-playfair font-bold text-xl mb-2 text-primary">Téléphone</h2>
                     <p className="text-primary/80 leading-relaxed">
-                      +225 07 07 84 37 77
+                      <a href="tel:+2250707843777" className="hover:text-accent transition-colors">
+                        +225 07 07 84 37 77
+                      </a>
                       <br />
-                      +225 01 02 46 52 52
+                      <a href="tel:+2250102465252" className="hover:text-accent transition-colors">
+                        +225 01 02 46 52 52
+                      </a>
                       <br />
-                      +225 05 96 75 30 30
+                      <a href="tel:+2250596753030" className="hover:text-accent transition-colors">
+                        +225 05 96 75 30 30
+                      </a>
                     </p>
                   </div>
                 </div>
@@ -95,6 +101,4 @@ const Contact = () => {
       </main>
     </div>
   );
-};
-
-export default Contact;
+}
