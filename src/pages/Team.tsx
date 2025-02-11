@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import Navbar from "../components/Navbar";
 import { motion } from "framer-motion";
-import { Mail, Phone } from "lucide-react";
+import { Mail, Phone, Award, BookOpen, Scale, Users } from "lucide-react";
 
 export default function Team() {
   useEffect(() => {
@@ -18,97 +18,126 @@ export default function Team() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="max-w-5xl mx-auto"
+            className="max-w-6xl mx-auto"
           >
-            <h1 className="text-4xl font-playfair font-bold text-primary mb-12 text-center">
-              Notre Équipe
-            </h1>
+            <div className="text-center mb-16">
+              <h1 className="text-5xl font-playfair font-bold text-primary mb-4">
+                Notre Équipe
+              </h1>
+              <p className="text-xl text-primary/70 max-w-2xl mx-auto">
+                Une équipe d'experts dédiée à votre succès juridique
+              </p>
+            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+              {/* Profil Principal */}
               <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
-                className="bg-white p-6 rounded-lg shadow-md"
+                className="lg:col-span-5 bg-white rounded-2xl shadow-lg overflow-hidden border border-accent/20"
               >
-                <div className="text-center mb-6">
-                  <div className="w-48 h-48 mx-auto mb-4 rounded-full overflow-hidden bg-accent/10">
-                    {/* Image placeholder */}
-                    <div className="w-full h-full flex items-center justify-center bg-accent/5">
-                      <span className="text-4xl font-playfair text-accent">MD</span>
+                <div className="aspect-[4/3] relative bg-gradient-to-br from-accent/20 to-accent/5">
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-40 h-40 rounded-full bg-white shadow-lg flex items-center justify-center">
+                      <span className="text-5xl font-playfair text-accent">MD</span>
                     </div>
                   </div>
-                  <h2 className="text-2xl font-playfair font-bold text-primary mb-2">
-                    Maître DIARRA
-                  </h2>
-                  <p className="text-accent mb-4">Avocat Principal</p>
-                  <div className="space-y-2">
-                    <p className="text-primary/80 flex items-center justify-center gap-2">
-                      <Phone className="w-4 h-4" />
-                      <a href="tel:+2250707843777" className="hover:text-accent transition-colors">
-                        +225 07 07 84 37 77
-                      </a>
-                    </p>
-                    <p className="text-primary/80 flex items-center justify-center gap-2">
-                      <Mail className="w-4 h-4" />
-                      <a href="mailto:mdiarraousmane@gmail.com" className="hover:text-accent transition-colors">
-                        mdiarraousmane@gmail.com
-                      </a>
-                    </p>
-                  </div>
                 </div>
-                <div className="text-primary/80 space-y-4">
-                  <h3 className="text-xl font-playfair font-bold text-primary mb-4">
-                    Une Approche Juridique Dynamique pour Réussir Vos Projets
-                  </h3>
-                  <p className="mb-4">
-                    Notre engagement ? Vous offrir une assistance juridique proactive et transparente, adaptée aux exigences de votre secteur.
-                  </p>
-                  <div className="space-y-2">
-                    <h4 className="text-lg font-semibold text-primary">✨ Nos points forts :</h4>
-                    <p>✔️ Une écoute attentive pour une parfaite compréhension de vos besoins.</p>
-                    <p>✔️ Une réactivité exemplaire face aux défis juridiques.</p>
-                    <p>✔️ Une expertise multidisciplinaire pour optimiser vos stratégies.</p>
+                <div className="p-8">
+                  <div className="text-center mb-6">
+                    <h2 className="text-3xl font-playfair font-bold text-primary mb-2">
+                      Maître DIARRA
+                    </h2>
+                    <p className="text-lg text-accent mb-4">Avocat Principal</p>
+                    <div className="flex flex-col gap-3">
+                      <a
+                        href="tel:+2250707843777"
+                        className="inline-flex items-center justify-center gap-2 text-primary/80 hover:text-accent transition-colors"
+                      >
+                        <Phone className="w-5 h-5" />
+                        <span>+225 07 07 84 37 77</span>
+                      </a>
+                      <a
+                        href="mailto:mdiarraousmane@gmail.com"
+                        className="inline-flex items-center justify-center gap-2 text-primary/80 hover:text-accent transition-colors"
+                      >
+                        <Mail className="w-5 h-5" />
+                        <span>mdiarraousmane@gmail.com</span>
+                      </a>
+                    </div>
                   </div>
-                  <p className="mt-4 font-semibold">
-                    Cabinet Maître Diarra : votre partenaire de confiance pour un avenir sécurisé.
-                  </p>
                 </div>
               </motion.div>
 
+              {/* Informations complémentaires */}
               <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
+                className="lg:col-span-7 space-y-6"
               >
-                <div className="bg-white p-6 rounded-lg shadow-md mb-8">
-                  <h3 className="text-xl font-playfair font-bold text-primary mb-4">
+                {/* Expertise */}
+                <div className="bg-white p-8 rounded-2xl shadow-lg border border-accent/20">
+                  <h3 className="text-2xl font-playfair font-bold text-primary mb-6 flex items-center gap-3">
+                    <Award className="w-6 h-6 text-accent" />
                     Domaines d'expertise
                   </h3>
-                  <ul className="space-y-3 text-primary/80">
-                    <li>• Droit des affaires</li>
-                    <li>• Droit immobilier</li>
-                    <li>• Droit civil</li>
-                    <li>• Transactions immobilières</li>
-                    <li>• Contentieux</li>
-                    <li>• Conseil juridique</li>
-                  </ul>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {[
+                      "Droit des affaires",
+                      "Droit immobilier",
+                      "Droit civil",
+                      "Transactions immobilières",
+                      "Contentieux",
+                      "Conseil juridique"
+                    ].map((domain, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center gap-2 p-3 rounded-lg bg-accent/5 text-primary/80"
+                      >
+                        <Scale className="w-4 h-4 text-accent" />
+                        {domain}
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                  <h3 className="text-xl font-playfair font-bold text-primary mb-4">
+                {/* Formation */}
+                <div className="bg-white p-8 rounded-2xl shadow-lg border border-accent/20">
+                  <h3 className="text-2xl font-playfair font-bold text-primary mb-6 flex items-center gap-3">
+                    <BookOpen className="w-6 h-6 text-accent" />
                     Formation
                   </h3>
-                  <ul className="space-y-4 text-primary/80">
-                    <li>
-                      <div className="font-semibold">Master en Droit des Affaires</div>
-                      <div className="text-sm">Université de Cocody, Abidjan</div>
-                    </li>
-                    <li>
-                      <div className="font-semibold">CAPA (Certificat d'Aptitude à la Profession d'Avocat)</div>
-                      <div className="text-sm">Barreau de Côte d'Ivoire</div>
-                    </li>
-                  </ul>
+                  <div className="space-y-4">
+                    <div className="p-4 rounded-lg bg-accent/5">
+                      <h4 className="font-semibold text-lg text-primary mb-1">Master en Droit des Affaires</h4>
+                      <p className="text-primary/70">Université de Cocody, Abidjan</p>
+                    </div>
+                    <div className="p-4 rounded-lg bg-accent/5">
+                      <h4 className="font-semibold text-lg text-primary mb-1">CAPA (Certificat d'Aptitude à la Profession d'Avocat)</h4>
+                      <p className="text-primary/70">Barreau de Côte d'Ivoire</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Engagements */}
+                <div className="bg-white p-8 rounded-2xl shadow-lg border border-accent/20">
+                  <h3 className="text-2xl font-playfair font-bold text-primary mb-6 flex items-center gap-3">
+                    <Users className="w-6 h-6 text-accent" />
+                    Notre engagement
+                  </h3>
+                  <div className="space-y-4 text-primary/80">
+                    <p className="leading-relaxed">
+                      Notre cabinet s'engage à fournir une assistance juridique proactive et transparente, 
+                      adaptée aux exigences spécifiques de chaque secteur. Nous mettons l'accent sur 
+                      l'écoute attentive de nos clients pour une compréhension approfondie de leurs besoins.
+                    </p>
+                    <p className="leading-relaxed">
+                      Notre approche multidisciplinaire et notre réactivité exemplaire nous permettent 
+                      d'offrir des solutions juridiques optimales et sur mesure pour chaque situation.
+                    </p>
+                  </div>
                 </div>
               </motion.div>
             </div>
