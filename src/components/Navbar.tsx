@@ -93,7 +93,7 @@ const Navbar = () => {
             {user && (
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent/90 transition-colors font-inter text-sm"
+                className="invisible px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent/90 transition-colors font-inter text-sm"
               >
                 Se déconnecter
               </button>
@@ -112,7 +112,7 @@ const Navbar = () => {
                 {user && (
                   <button
                     onClick={handleLogout}
-                    className="px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent/90 transition-colors font-inter text-sm"
+                    className="invisible px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent/90 transition-colors font-inter text-sm"
                   >
                     Se déconnecter
                   </button>
