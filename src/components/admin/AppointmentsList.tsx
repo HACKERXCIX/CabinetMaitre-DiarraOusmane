@@ -64,6 +64,13 @@ const AppointmentsList = () => {
     filterAppointments();
   }, [statusFilter, searchQuery, appointments]);
 
+  const validateStatus = (status: string): 'pending' | 'approved' | 'rejected' => {
+    if (status === 'pending' || status === 'approved' || status === 'rejected') {
+      return status;
+    }
+    return 'pending'; // Valeur par défaut si le statut n'est pas valide
+  };
+
   const loadAppointments = async () => {
     try {
       const { data, error } = await supabase
@@ -80,8 +87,13 @@ const AppointmentsList = () => {
 
       if (error) throw error;
 
-      setAppointments(data || []);
-      setFilteredAppointments(data || []);
+      const validatedData: Appointment[] = (data || []).map(item => ({
+        ...item,
+        status: validateStatus(item.status),
+      })) as Appointment[];
+
+      setAppointments(validatedData);
+      setFilteredAppointments(validatedData);
     } catch (error: any) {
       toast.error('Erreur lors du chargement des rendez-vous: ' + error.message);
     }
