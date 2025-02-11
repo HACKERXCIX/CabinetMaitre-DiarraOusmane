@@ -89,7 +89,7 @@ const Navbar = () => {
             <NavLink to="/immobilier">Immobilier</NavLink>
             <NavLink to="/equipe">Notre Équipe</NavLink>
             <NavLink to="/contact">Contact</NavLink>
-            {isAdmin && <NavLink to="/admin">Administration</NavLink>}
+            {/* Le lien Admin est maintenant complètement retiré */}
             {user && (
               <button
                 onClick={handleLogout}
@@ -108,7 +108,7 @@ const Navbar = () => {
                 <NavLink to="/immobilier">Immobilier</NavLink>
                 <NavLink to="/equipe">Notre Équipe</NavLink>
                 <NavLink to="/contact">Contact</NavLink>
-                {isAdmin && <NavLink to="/admin">Administration</NavLink>}
+                {/* Le lien Admin est maintenant complètement retiré du menu mobile également */}
                 {user && (
                   <button
                     onClick={handleLogout}
