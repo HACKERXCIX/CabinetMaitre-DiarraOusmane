@@ -1,10 +1,8 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Icon } from "lucide-react";
-import dynamic from "next/dynamic";
+import * as Icons from "lucide-react";
 import { LucideProps } from "lucide-react";
-import dynamicIconImports from "lucide-react/dynamicIconImports";
 
 const TikTokIcon = () => (
   <svg 
@@ -22,7 +20,7 @@ const TikTokIcon = () => (
 );
 
 interface IconProps extends Omit<LucideProps, "ref"> {
-  name: keyof typeof dynamicIconImports | "TikTok";
+  name: string;
 }
 
 const DynamicIcon = ({ name, ...props }: IconProps) => {
@@ -30,7 +28,12 @@ const DynamicIcon = ({ name, ...props }: IconProps) => {
     return <TikTokIcon />;
   }
   
-  const LucideIcon = dynamic(dynamicIconImports[name as keyof typeof dynamicIconImports]);
+  const LucideIcon = (Icons as any)[name];
+  if (!LucideIcon) {
+    console.warn(`Icon ${name} not found`);
+    return null;
+  }
+  
   return <LucideIcon {...props} />;
 };
 
@@ -62,7 +65,7 @@ const Footer = () => {
                 className="text-white hover:text-accent transition-colors"
                 aria-label={`Visitez notre page ${link.name}`}
               >
-                <DynamicIcon name={link.icon_name as IconProps["name"]} size={24} />
+                <DynamicIcon name={link.icon_name} size={24} />
               </a>
             ))}
           </div>
