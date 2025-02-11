@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,6 +12,8 @@ import PropertyTypesTab from "@/components/admin/tabs/PropertyTypesTab";
 import StatsTab from "@/components/admin/tabs/StatsTab";
 import SocialLinksTab from "@/components/admin/tabs/SocialLinksTab";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { LogOut } from "lucide-react";
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -43,6 +46,17 @@ const Admin = () => {
     }
   }, [isAdmin, isCheckingAdmin, navigate]);
 
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      toast.success("Déconnexion réussie");
+      navigate("/auth");
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
+
   if (isCheckingAdmin) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -54,7 +68,17 @@ const Admin = () => {
   return (
     <div className="min-h-screen py-20 px-4">
       <div className="container mx-auto mt-16">
-        <h1 className="text-3xl font-bold mb-8">Administration</h1>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold">Administration</h1>
+          <Button 
+            variant="outline" 
+            onClick={handleLogout}
+            className="flex items-center gap-2"
+          >
+            <LogOut size={16} />
+            Se déconnecter
+          </Button>
+        </div>
 
         <Tabs defaultValue="properties" className="space-y-6">
           <TabsList>
