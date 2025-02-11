@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import Navbar from "../components/Navbar";
 import { motion } from "framer-motion";
-import { Mail, Phone, Award, BookOpen, Scale, Users } from "lucide-react";
+import { Mail, Phone, BookOpen, Users } from "lucide-react";
 
 export default function Team() {
   useEffect(() => {
@@ -77,32 +77,6 @@ export default function Team() {
                 transition={{ duration: 0.6, delay: 0.4 }}
                 className="lg:col-span-7 space-y-6"
               >
-                {/* Expertise */}
-                <div className="bg-white p-8 rounded-2xl shadow-lg border border-accent/20">
-                  <h3 className="text-2xl font-playfair font-bold text-primary mb-6 flex items-center gap-3">
-                    <Award className="w-6 h-6 text-accent" />
-                    Domaines d'expertise
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {[
-                      "Droit des affaires",
-                      "Droit immobilier",
-                      "Droit civil",
-                      "Transactions immobilières",
-                      "Contentieux",
-                      "Conseil juridique"
-                    ].map((domain, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center gap-2 p-3 rounded-lg bg-accent/5 text-primary/80"
-                      >
-                        <Scale className="w-4 h-4 text-accent" />
-                        {domain}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
                 {/* Formation */}
                 <div className="bg-white p-8 rounded-2xl shadow-lg border border-accent/20">
                   <h3 className="text-2xl font-playfair font-bold text-primary mb-6 flex items-center gap-3">
