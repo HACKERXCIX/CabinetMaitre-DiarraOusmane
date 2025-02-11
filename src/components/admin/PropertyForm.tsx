@@ -1,36 +1,12 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-
-interface Property {
-  id?: string;
-  title: string;
-  description: string;
-  type: string;
-  property_type: string;
-  price: number;
-  location: string;
-  surface: number;
-  rooms: number | null;
-  architecture_style: string | null;
-  images: string[];
-  videos: string[];
-}
-
-interface PropertyType {
-  id: string;
-  name: string;
-}
-
-interface PropertyFormProps {
-  property?: Property;
-  onSuccess?: () => void;
-}
+import BasicFields from "./properties/BasicFields";
+import AdditionalFields from "./properties/AdditionalFields";
+import MediaUpload from "./properties/MediaUpload";
+import { PropertyFormProps, PropertyType } from "./properties/types";
 
 const PropertyForm = ({ property, onSuccess }: PropertyFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -40,7 +16,6 @@ const PropertyForm = ({ property, onSuccess }: PropertyFormProps) => {
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
-    // Charger les types de biens
     const loadPropertyTypes = async () => {
       const { data, error } = await supabase
         .from("property_types")
@@ -63,29 +38,20 @@ const PropertyForm = ({ property, onSuccess }: PropertyFormProps) => {
       const form = formRef.current;
       const elements = form.elements as HTMLFormControlsCollection;
       
-      // Type assertion to access form elements
-      const titleInput = elements.namedItem('title') as HTMLInputElement;
-      const descriptionInput = elements.namedItem('description') as HTMLTextAreaElement;
-      const typeInput = elements.namedItem('type') as HTMLSelectElement;
-      const propertyTypeInput = elements.namedItem('property_type') as HTMLSelectElement;
-      const priceInput = elements.namedItem('price') as HTMLInputElement;
-      const locationInput = elements.namedItem('location') as HTMLInputElement;
-      const surfaceInput = elements.namedItem('surface') as HTMLInputElement;
-      const roomsInput = elements.namedItem('rooms') as HTMLInputElement;
-      const architectureStyleInput = elements.namedItem('architecture_style') as HTMLInputElement;
+      const fields = [
+        'title', 'description', 'type', 'property_type', 'price',
+        'location', 'surface', 'rooms', 'architecture_style'
+      ];
 
-      // Set values safely
-      if (titleInput) titleInput.value = property.title;
-      if (descriptionInput) descriptionInput.value = property.description;
-      if (typeInput) typeInput.value = property.type;
-      if (propertyTypeInput) propertyTypeInput.value = property.property_type;
-      if (priceInput) priceInput.value = property.price.toString();
-      if (locationInput) locationInput.value = property.location;
-      if (surfaceInput) surfaceInput.value = property.surface.toString();
-      if (roomsInput && property.rooms) roomsInput.value = property.rooms.toString();
-      if (architectureStyleInput && property.architecture_style) {
-        architectureStyleInput.value = property.architecture_style;
-      }
+      fields.forEach(field => {
+        const element = elements.namedItem(field) as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
+        if (element) {
+          const value = property[field as keyof typeof property];
+          if (value !== null && value !== undefined) {
+            element.value = String(value);
+          }
+        }
+      });
     }
   }, [property]);
 
@@ -98,53 +64,38 @@ const PropertyForm = ({ property, onSuccess }: PropertyFormProps) => {
       const imageUrls: string[] = [];
       const videoUrls: string[] = [];
 
-      // Upload new images if any
-      if (images) {
-        for (let i = 0; i < images.length; i++) {
-          const file = images[i];
-          const fileExt = file.name.split('.').pop();
-          const fileName = `${Math.random()}.${fileExt}`;
-          const filePath = `properties/${fileName}`;
+      const uploadFiles = async (files: FileList | null, folder: string) => {
+        const urls: string[] = [];
+        if (files) {
+          for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Math.random()}.${fileExt}`;
+            const filePath = `properties/${folder}/${fileName}`;
 
-          const { error: uploadError } = await supabase.storage
-            .from('property_media')
-            .upload(filePath, file);
+            const { error: uploadError } = await supabase.storage
+              .from('property_media')
+              .upload(filePath, file);
 
-          if (uploadError) {
-            throw uploadError;
+            if (uploadError) throw uploadError;
+
+            const { data } = supabase.storage
+              .from('property_media')
+              .getPublicUrl(filePath);
+
+            urls.push(data.publicUrl);
           }
-
-          const { data } = supabase.storage
-            .from('property_media')
-            .getPublicUrl(filePath);
-
-          imageUrls.push(data.publicUrl);
         }
-      }
+        return urls;
+      };
 
-      // Upload new videos if any
-      if (videos) {
-        for (let i = 0; i < videos.length; i++) {
-          const file = videos[i];
-          const fileExt = file.name.split('.').pop();
-          const fileName = `${Math.random()}.${fileExt}`;
-          const filePath = `properties/videos/${fileName}`;
+      const [newImageUrls, newVideoUrls] = await Promise.all([
+        uploadFiles(images, 'images'),
+        uploadFiles(videos, 'videos')
+      ]);
 
-          const { error: uploadError } = await supabase.storage
-            .from('property_media')
-            .upload(filePath, file);
-
-          if (uploadError) {
-            throw uploadError;
-          }
-
-          const { data } = supabase.storage
-            .from('property_media')
-            .getPublicUrl(filePath);
-
-          videoUrls.push(data.publicUrl);
-        }
-      }
+      imageUrls.push(...newImageUrls);
+      videoUrls.push(...newVideoUrls);
 
       const propertyData = {
         title: String(formData.get('title')),
@@ -160,22 +111,9 @@ const PropertyForm = ({ property, onSuccess }: PropertyFormProps) => {
         videos: videoUrls.length > 0 ? videoUrls : (property?.videos || []),
       };
 
-      let error;
-
-      if (property?.id) {
-        // Mise à jour d'une propriété existante
-        const { error: updateError } = await supabase
-          .from('properties')
-          .update(propertyData)
-          .eq('id', property.id);
-        error = updateError;
-      } else {
-        // Création d'une nouvelle propriété
-        const { error: insertError } = await supabase
-          .from('properties')
-          .insert(propertyData);
-        error = insertError;
-      }
+      const { error } = property?.id
+        ? await supabase.from('properties').update(propertyData).eq('id', property.id)
+        : await supabase.from('properties').insert(propertyData);
 
       if (error) throw error;
 
@@ -194,108 +132,24 @@ const PropertyForm = ({ property, onSuccess }: PropertyFormProps) => {
   return (
     <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <Label htmlFor="title">Titre</Label>
-          <Input id="title" name="title" required />
-        </div>
+        <BasicFields propertyTypes={propertyTypes} />
+        <AdditionalFields />
 
-        <div>
-          <Label htmlFor="type">Type d'annonce</Label>
-          <select
-            id="type"
-            name="type"
-            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-            required
-          >
-            <option value="vente">Vente</option>
-            <option value="location">Location</option>
-          </select>
-        </div>
+        <MediaUpload
+          type="images"
+          files={images}
+          onFilesChange={setImages}
+          existingFiles={property?.images}
+          property={property}
+        />
 
-        <div>
-          <Label htmlFor="property_type">Type de bien</Label>
-          <select
-            id="property_type"
-            name="property_type"
-            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-            required
-          >
-            {propertyTypes.map((type) => (
-              <option key={type.id} value={type.name}>
-                {type.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <Label htmlFor="price">Prix</Label>
-          <Input type="number" id="price" name="price" required />
-        </div>
-
-        <div>
-          <Label htmlFor="surface">Surface (m²)</Label>
-          <Input type="number" id="surface" name="surface" required />
-        </div>
-
-        <div>
-          <Label htmlFor="rooms">Nombre de pièces</Label>
-          <Input type="number" id="rooms" name="rooms" />
-        </div>
-
-        <div>
-          <Label htmlFor="location">Localisation</Label>
-          <Input id="location" name="location" required />
-        </div>
-
-        <div>
-          <Label htmlFor="architecture_style">Style architectural</Label>
-          <Input id="architecture_style" name="architecture_style" />
-        </div>
-
-        <div>
-          <Label htmlFor="images">Images {property && "(laissez vide pour conserver les images existantes)"}</Label>
-          <Input
-            id="images"
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={(e) => setImages(e.target.files)}
-          />
-          {property && property.images.length > 0 && (
-            <div className="mt-2 flex gap-2 overflow-x-auto">
-              {property.images.map((image, index) => (
-                <img
-                  key={index}
-                  src={image}
-                  alt={`Image ${index + 1}`}
-                  className="w-20 h-20 object-cover rounded"
-                />
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div>
-          <Label htmlFor="videos">Vidéos {property && "(laissez vide pour conserver les vidéos existantes)"}</Label>
-          <Input
-            id="videos"
-            type="file"
-            accept="video/*"
-            multiple
-            onChange={(e) => setVideos(e.target.files)}
-          />
-          {property && property.videos && property.videos.length > 0 && (
-            <div className="mt-2">
-              {property.videos.length} vidéo(s) existante(s)
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div>
-        <Label htmlFor="description">Description</Label>
-        <Textarea id="description" name="description" required />
+        <MediaUpload
+          type="videos"
+          files={videos}
+          onFilesChange={setVideos}
+          existingFiles={property?.videos}
+          property={property}
+        />
       </div>
 
       <Button type="submit" disabled={isLoading}>
