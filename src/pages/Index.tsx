@@ -1,7 +1,9 @@
+
 import { useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
 import AppointmentForm from "../components/AppointmentForm";
+import Footer from "../components/Footer";
 import { motion } from "framer-motion";
 
 const Index = () => {
@@ -10,7 +12,7 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white flex flex-col">
       <Navbar />
       <Hero />
       <main>
@@ -66,6 +68,7 @@ const Index = () => {
           </div>
         </section>
       </main>
+      <Footer />
     </div>
   );
 };
