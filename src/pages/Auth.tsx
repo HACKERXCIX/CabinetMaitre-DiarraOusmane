@@ -9,7 +9,6 @@ import { toast } from "sonner";
 const Auth = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -18,28 +17,27 @@ const Auth = () => {
     setIsLoading(true);
 
     try {
-      if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-        });
-        if (error) throw error;
-        toast.success("Inscription réussie ! Veuillez vérifier votre email.");
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        if (error) throw error;
-        toast.success("Connexion réussie !");
-        
-        // Si c'est l'administrateur, rediriger vers la page admin
-        if (email === "mdiarraousmane@gmail.com") {
-          navigate("/admin");
-        } else {
-          navigate("/");
-        }
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      
+      if (error) throw error;
+
+      const { data: isAdmin, error: roleError } = await supabase.rpc('has_role', {
+        _role: 'admin'
+      });
+
+      if (roleError) throw roleError;
+
+      if (!isAdmin) {
+        // Si l'utilisateur n'est pas admin, le déconnecter et afficher une erreur
+        await supabase.auth.signOut();
+        throw new Error("Accès non autorisé. Cette page est réservée aux administrateurs.");
       }
+
+      toast.success("Connexion réussie !");
+      navigate("/admin");
     } catch (error: any) {
       toast.error(error.message);
     } finally {
@@ -52,8 +50,11 @@ const Auth = () => {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            {isSignUp ? "Créer un compte" : "Se connecter"}
+            Connexion Administrateur
           </h2>
+          <p className="mt-2 text-center text-sm text-gray-600">
+            Espace réservé à l'administration
+          </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleAuth}>
           <div className="rounded-md shadow-sm space-y-4">
@@ -93,26 +94,10 @@ const Auth = () => {
               className="w-full"
               disabled={isLoading}
             >
-              {isLoading
-                ? "Chargement..."
-                : isSignUp
-                ? "S'inscrire"
-                : "Se connecter"}
+              {isLoading ? "Connexion..." : "Se connecter"}
             </Button>
           </div>
         </form>
-
-        <div className="text-center">
-          <button
-            type="button"
-            onClick={() => setIsSignUp(!isSignUp)}
-            className="text-accent hover:text-accent/80"
-          >
-            {isSignUp
-              ? "Déjà un compte ? Se connecter"
-              : "Pas de compte ? S'inscrire"}
-          </button>
-        </div>
       </div>
     </div>
   );
