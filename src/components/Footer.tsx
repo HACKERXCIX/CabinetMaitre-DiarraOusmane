@@ -1,5 +1,10 @@
 
-import { Facebook, Instagram, Linkedin, Youtube, MessagesSquare } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { Icon } from "lucide-react";
+import dynamic from "next/dynamic";
+import { LucideProps } from "lucide-react";
+import dynamicIconImports from "lucide-react/dynamicIconImports";
 
 const TikTokIcon = () => (
   <svg 
@@ -16,55 +21,48 @@ const TikTokIcon = () => (
   </svg>
 );
 
+interface IconProps extends Omit<LucideProps, "ref"> {
+  name: keyof typeof dynamicIconImports | "TikTok";
+}
+
+const DynamicIcon = ({ name, ...props }: IconProps) => {
+  if (name === "TikTok") {
+    return <TikTokIcon />;
+  }
+  
+  const LucideIcon = dynamic(dynamicIconImports[name as keyof typeof dynamicIconImports]);
+  return <LucideIcon {...props} />;
+};
+
 const Footer = () => {
-  const socialLinks = [
-    {
-      name: "Facebook",
-      icon: Facebook,
-      url: "https://facebook.com/",
+  const { data: socialLinks } = useQuery({
+    queryKey: ["socialLinks"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("social_links")
+        .select("*")
+        .is("deleted_at", null)
+        .order("order_index");
+      if (error) throw error;
+      return data;
     },
-    {
-      name: "YouTube",
-      icon: Youtube,
-      url: "https://youtube.com/",
-    },
-    {
-      name: "Instagram",
-      icon: Instagram,
-      url: "https://instagram.com/",
-    },
-    {
-      name: "WhatsApp Business",
-      icon: MessagesSquare,
-      url: "https://business.whatsapp.com/",
-    },
-    {
-      name: "LinkedIn",
-      icon: Linkedin,
-      url: "https://linkedin.com/",
-    },
-    {
-      name: "TikTok",
-      icon: TikTokIcon,
-      url: "https://tiktok.com/",
-    },
-  ];
+  });
 
   return (
     <footer className="bg-primary py-8 mt-auto">
       <div className="container mx-auto px-4">
         <div className="flex flex-col items-center justify-center">
           <div className="flex gap-6 mb-4">
-            {socialLinks.map((link) => (
+            {socialLinks?.map((link) => (
               <a
-                key={link.name}
+                key={link.id}
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-white hover:text-accent transition-colors"
                 aria-label={`Visitez notre page ${link.name}`}
               >
-                <link.icon size={24} />
+                <DynamicIcon name={link.icon_name as IconProps["name"]} size={24} />
               </a>
             ))}
           </div>

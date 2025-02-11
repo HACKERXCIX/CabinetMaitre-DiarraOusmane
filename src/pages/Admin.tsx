@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,6 +9,7 @@ import AppointmentsList from "@/components/admin/AppointmentsList";
 import PropertiesTab from "@/components/admin/tabs/PropertiesTab";
 import PropertyTypesTab from "@/components/admin/tabs/PropertyTypesTab";
 import StatsTab from "@/components/admin/tabs/StatsTab";
+import SocialLinksTab from "@/components/admin/tabs/SocialLinksTab";
 import { toast } from "sonner";
 
 const Admin = () => {
@@ -64,6 +64,7 @@ const Admin = () => {
             <TabsTrigger value="services">Services</TabsTrigger>
             <TabsTrigger value="menus">Menus</TabsTrigger>
             <TabsTrigger value="appointments">Rendez-vous</TabsTrigger>
+            <TabsTrigger value="social-links">Réseaux Sociaux</TabsTrigger>
           </TabsList>
 
           <TabsContent value="properties">
@@ -97,6 +98,12 @@ const Admin = () => {
                 Gestion des rendez-vous
               </h2>
               <AppointmentsList />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="social-links">
+            <div className="bg-white rounded-lg shadow p-6">
+              <SocialLinksTab />
             </div>
           </TabsContent>
         </Tabs>

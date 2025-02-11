@@ -688,6 +688,39 @@ export type Database = {
         }
         Relationships: []
       }
+      social_links: {
+        Row: {
+          created_at: string
+          deleted_at: string | null
+          icon_name: string
+          id: string
+          name: string
+          order_index: number
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          deleted_at?: string | null
+          icon_name: string
+          id?: string
+          name: string
+          order_index: number
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          deleted_at?: string | null
+          icon_name?: string
+          id?: string
+          name?: string
+          order_index?: number
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
       symptoms: {
         Row: {
           associated_pathologies: string[] | null
