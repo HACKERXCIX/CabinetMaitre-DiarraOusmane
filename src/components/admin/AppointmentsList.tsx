@@ -3,6 +3,9 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { utils as xlsxUtils, writeFile } from "xlsx";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import {
   Table,
   TableBody,
@@ -17,15 +20,31 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Download, FileSpreadsheet, FileText } from "lucide-react";
 
 const AppointmentsList = () => {
   const [appointments, setAppointments] = useState<any[]>([]);
+  const [filteredAppointments, setFilteredAppointments] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedReceipt, setSelectedReceipt] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     loadAppointments();
   }, []);
+
+  useEffect(() => {
+    filterAppointments();
+  }, [statusFilter, searchQuery, appointments]);
 
   const loadAppointments = async () => {
     const { data, error } = await supabase
@@ -46,6 +65,67 @@ const AppointmentsList = () => {
     }
 
     setAppointments(data);
+    setFilteredAppointments(data);
+  };
+
+  const filterAppointments = () => {
+    let filtered = [...appointments];
+
+    // Filtre par statut
+    if (statusFilter !== "all") {
+      filtered = filtered.filter(app => app.status === statusFilter);
+    }
+
+    // Filtre par recherche
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(app => 
+        app.full_name?.toLowerCase().includes(query) ||
+        app.email?.toLowerCase().includes(query) ||
+        app.properties?.title?.toLowerCase().includes(query)
+      );
+    }
+
+    setFilteredAppointments(filtered);
+  };
+
+  const exportToExcel = () => {
+    const data = filteredAppointments.map(app => ({
+      'Date': new Date(app.desired_date).toLocaleDateString(),
+      'Heure': formatTime(app.appointment_time),
+      'Client': app.full_name,
+      'Email': app.email,
+      'Téléphone': app.phone,
+      'Type': getAppointmentType(app),
+      'Bien': app.properties?.title || 'Consultation',
+      'Statut': app.status
+    }));
+
+    const ws = xlsxUtils.json_to_sheet(data);
+    const wb = xlsxUtils.book_new();
+    xlsxUtils.book_append_sheet(wb, ws, "Rendez-vous");
+    writeFile(wb, "rendez-vous.xlsx");
+  };
+
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+    const tableData = filteredAppointments.map(app => [
+      new Date(app.desired_date).toLocaleDateString(),
+      formatTime(app.appointment_time),
+      app.full_name,
+      app.email,
+      app.phone,
+      getAppointmentType(app),
+      app.properties?.title || 'Consultation',
+      app.status
+    ]);
+
+    autoTable(doc, {
+      head: [['Date', 'Heure', 'Client', 'Email', 'Téléphone', 'Type', 'Bien', 'Statut']],
+      body: tableData,
+    });
+
+    doc.save('rendez-vous.pdf');
   };
 
   const updateStatus = async (id: string, status: string) => {
@@ -100,6 +180,38 @@ const AppointmentsList = () => {
         </DialogContent>
       </Dialog>
 
+      <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between bg-white p-4 rounded-lg shadow">
+        <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-full sm:w-[180px]">
+              <SelectValue placeholder="Filtrer par statut" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tous les statuts</SelectItem>
+              <SelectItem value="pending">En attente</SelectItem>
+              <SelectItem value="approved">Approuvé</SelectItem>
+              <SelectItem value="rejected">Refusé</SelectItem>
+            </SelectContent>
+          </Select>
+          <Input
+            placeholder="Rechercher un client, email ou bien..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full sm:w-[300px]"
+          />
+        </div>
+        <div className="flex gap-2 w-full md:w-auto">
+          <Button variant="outline" onClick={exportToExcel}>
+            <FileSpreadsheet className="h-4 w-4 mr-2" />
+            Excel
+          </Button>
+          <Button variant="outline" onClick={exportToPDF}>
+            <FileText className="h-4 w-4 mr-2" />
+            PDF
+          </Button>
+        </div>
+      </div>
+
       <Table>
         <TableHeader>
           <TableRow>
@@ -113,7 +225,7 @@ const AppointmentsList = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {appointments.map((appointment) => (
+          {filteredAppointments.map((appointment) => (
             <TableRow key={appointment.id}>
               <TableCell>
                 {new Date(appointment.desired_date).toLocaleDateString()} à {formatTime(appointment.appointment_time)}
