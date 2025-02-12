@@ -90,7 +90,7 @@ const Navbar = () => {
             <NavLink to="/equipe">Notre Équipe</NavLink>
             <NavLink to="/contact">Contact</NavLink>
             {!user && (
-              <NavLink to="/auth" className="px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent/90 transition-colors font-inter text-sm">
+              <NavLink to="/auth" className="px-4 py-2 bg-white text-primary rounded-lg hover:bg-gray-100 transition-colors font-inter text-sm border border-primary">
                 Connexion
               </NavLink>
             )}
@@ -113,7 +113,7 @@ const Navbar = () => {
                 <NavLink to="/equipe">Notre Équipe</NavLink>
                 <NavLink to="/contact">Contact</NavLink>
                 {!user && (
-                  <NavLink to="/auth" className="px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent/90 transition-colors font-inter text-sm text-center">
+                  <NavLink to="/auth" className="px-4 py-2 bg-white text-primary rounded-lg hover:bg-gray-100 transition-colors font-inter text-sm text-center border border-primary">
                     Connexion
                   </NavLink>
                 )}
