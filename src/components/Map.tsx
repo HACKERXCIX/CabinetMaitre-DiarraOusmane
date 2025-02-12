@@ -37,12 +37,12 @@ export default function Map() {
 
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/light-v11', // Style clair similaire à l'image
+      style: 'mapbox://styles/mapbox/satellite-streets-v12',
       center: [-3.9892, 5.3484], // Abidjan coordinates
-      zoom: 12.5, // Zoom ajusté pour voir la ville
+      zoom: 13,
       minZoom: 11,
       maxZoom: 19,
-      pitch: 0, // Vue en 2D
+      pitch: 45, // Ajout d'une légère inclinaison pour plus de profondeur
       bearing: 0,
     });
 
@@ -67,7 +67,7 @@ export default function Map() {
     locations.forEach(location => {
       // Créer un élément personnalisé pour le marqueur
       const marker = document.createElement('div');
-      marker.className = 'w-8 h-8 bg-primary rounded-full border-2 border-white shadow-lg cursor-pointer hover:bg-accent transition-colors duration-300';
+      marker.className = 'w-8 h-8 bg-white rounded-full border-2 border-primary shadow-lg cursor-pointer hover:bg-primary hover:border-white transition-colors duration-300';
 
       // Créer un popup plus détaillé avec plus d'informations
       const popup = new mapboxgl.Popup({
@@ -100,7 +100,7 @@ export default function Map() {
 
     // Ajouter les contrôles de navigation
     map.current.addControl(new mapboxgl.NavigationControl({
-      visualizePitch: false
+      visualizePitch: true
     }), 'top-right');
     
     // Ajouter le contrôle de géolocalisation
@@ -118,13 +118,19 @@ export default function Map() {
       unit: 'metric'
     }), 'bottom-right');
 
-    // Désactiver la rotation de la carte
-    map.current.dragRotate.disable();
-    map.current.touchZoomRotate.disableRotation();
+    // Ajouter le contrôle de plein écran
+    map.current.addControl(new mapboxgl.FullscreenControl(), 'top-right');
 
-    // Améliorer la lisibilité de la carte
+    // Améliorer l'expérience utilisateur
     map.current.on('load', () => {
       if (!map.current) return;
+
+      // Ajouter des effets atmosphériques pour plus de réalisme
+      map.current.setFog({
+        'color': 'rgb(255, 255, 255)',
+        'high-color': 'rgb(200, 200, 225)',
+        'horizon-blend': 0.2
+      });
 
       // Ajuster l'opacité des labels pour une meilleure lisibilité
       map.current.on('zoom', () => {
