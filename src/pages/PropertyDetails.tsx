@@ -1,7 +1,6 @@
-
 import { useParams, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import Navbar from "@/components/Navbar";
+import Navbar from "../components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { useToast } from "@/hooks/use-toast";
@@ -275,7 +274,7 @@ const PropertyDetails = () => {
               <DialogTrigger asChild>
                 <Button className="w-full">Demander une visite</Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
+              <DialogContent className="sm:max-w-[425px] max-h-[80vh] overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-accent/20 hover:scrollbar-thumb-accent/30">
                 <DialogHeader>
                   <DialogTitle>Demande de visite</DialogTitle>
                   <DialogDescription>
