@@ -12,7 +12,7 @@ export const usePageContent = (pageName: string, sectionName: string) => {
         .eq("page_name", pageName)
         .eq("section_name", sectionName)
         .is("deleted_at", null)
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error("Error fetching page content:", error);
