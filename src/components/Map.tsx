@@ -15,18 +15,18 @@ export default function Map() {
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/light-v11',
-      center: [-3.9892, 5.3484], // Abidjan coordinates
+      center: [-3.9892, 5.3484] as [number, number], // Abidjan coordinates avec type assertion
       zoom: 12
     });
 
     // Add markers for both locations
     const locations = [
       {
-        coordinates: [-3.9733, 5.3576], // Coordinates for Cocody 2 plateaux
+        coordinates: [-3.9733, 5.3576] as [number, number], // Type assertion pour Cocody
         name: "Cabinet Maître Diarra - Cocody"
       },
       {
-        coordinates: [-4.0060, 5.3073], // Coordinates for Treichville
+        coordinates: [-4.0060, 5.3073] as [number, number], // Type assertion pour Treichville
         name: "Cabinet Maître Diarra - Treichville"
       }
     ];
