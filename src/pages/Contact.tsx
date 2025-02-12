@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import Navbar from "../components/Navbar";
 import { Mail, Phone, Clock, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
+import Map from "../components/Map";
 
 export default function Contact() {
   useEffect(() => {
@@ -24,7 +25,7 @@ export default function Contact() {
               Nos Coordonnées
             </h1>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -96,6 +97,15 @@ export default function Contact() {
                 </div>
               </motion.div>
             </div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+              className="w-full rounded-lg overflow-hidden"
+            >
+              <Map />
+            </motion.div>
           </motion.div>
         </div>
       </main>
