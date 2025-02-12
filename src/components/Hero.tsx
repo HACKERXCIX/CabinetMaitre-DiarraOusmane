@@ -1,10 +1,25 @@
 
 import { motion } from "framer-motion";
-import { Gavel, Building, Briefcase } from "lucide-react";
+import { Gavel, Building, Briefcase, Cog } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { usePageContent } from "@/hooks/usePageContent";
 
 const Hero = () => {
   const navigate = useNavigate();
+  const { data: heroContent } = usePageContent("home", "hero");
+  
+  const { data: isAdmin } = useQuery({
+    queryKey: ["checkAdmin"],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("has_role", {
+        _role: "admin",
+      });
+      if (error) return false;
+      return data;
+    },
+  });
 
   const handleAppointment = () => {
     const appointmentSection = document.getElementById('appointment-section');
@@ -13,8 +28,25 @@ const Hero = () => {
     }
   };
 
+  const handleEditClick = () => {
+    navigate("/admin");
+  };
+
   return (
     <section className="min-h-screen flex items-center justify-center bg-gradient-to-b from-accent/5 to-white pt-20">
+      {/* Bouton d'édition pour les administrateurs */}
+      {isAdmin && (
+        <motion.button
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed top-24 right-4 p-2 bg-accent/10 rounded-full hover:bg-accent/20 transition-colors z-50"
+          onClick={handleEditClick}
+          title="Modifier le contenu"
+        >
+          <Cog className="w-5 h-5 text-accent" />
+        </motion.button>
+      )}
+
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto text-center">
           <motion.div
@@ -32,7 +64,7 @@ const Hero = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-5xl md:text-6xl font-playfair font-bold text-primary mb-6"
           >
-            Excellence Juridique & Immobilière
+            {heroContent?.title || "Excellence Juridique & Immobilière"}
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -40,7 +72,7 @@ const Hero = () => {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="text-lg md:text-xl text-primary/80 mb-12 font-inter"
           >
-            Une expertise reconnue au service de vos projets juridiques et immobiliers
+            {heroContent?.description || "Une expertise reconnue au service de vos projets juridiques et immobiliers"}
           </motion.p>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
