@@ -2,13 +2,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
-interface PageContent {
-  subtitle?: string;
-  title?: string;
-  description?: string;
-  appointment_title?: string;
-}
-
 export const usePageContent = (pageName: string, sectionName: string) => {
   return useQuery({
     queryKey: ["pageContent", pageName, sectionName],
@@ -26,7 +19,7 @@ export const usePageContent = (pageName: string, sectionName: string) => {
         return null;
       }
 
-      return data?.content as PageContent | null;
+      return data?.content;
     },
   });
 };
