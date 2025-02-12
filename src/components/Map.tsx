@@ -37,13 +37,13 @@ export default function Map() {
 
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/satellite-streets-v12', // Style hybride satellite + rues
+      style: 'mapbox://styles/mapbox/light-v11', // Style clair similaire à l'image
       center: [-3.9892, 5.3484], // Abidjan coordinates
-      zoom: 13,
-      minZoom: 11, // Zoom minimum ajusté pour voir plus de contexte
-      maxZoom: 19, // Zoom maximum augmenté pour plus de détails
+      zoom: 12.5, // Zoom ajusté pour voir la ville
+      minZoom: 11,
+      maxZoom: 19,
       pitch: 0, // Vue en 2D
-      bearing: 0, // Orientation vers le nord
+      bearing: 0,
     });
 
     // Add markers for both locations
@@ -67,7 +67,7 @@ export default function Map() {
     locations.forEach(location => {
       // Créer un élément personnalisé pour le marqueur
       const marker = document.createElement('div');
-      marker.className = 'w-8 h-8 bg-accent rounded-full border-3 border-white shadow-lg cursor-pointer hover:bg-primary transition-colors duration-300';
+      marker.className = 'w-8 h-8 bg-primary rounded-full border-2 border-white shadow-lg cursor-pointer hover:bg-accent transition-colors duration-300';
 
       // Créer un popup plus détaillé avec plus d'informations
       const popup = new mapboxgl.Popup({
@@ -100,7 +100,7 @@ export default function Map() {
 
     // Ajouter les contrôles de navigation
     map.current.addControl(new mapboxgl.NavigationControl({
-      visualizePitch: false // Désactiver la visualisation du pitch pour rester en 2D
+      visualizePitch: false
     }), 'top-right');
     
     // Ajouter le contrôle de géolocalisation
@@ -118,22 +118,18 @@ export default function Map() {
       unit: 'metric'
     }), 'bottom-right');
 
-    // Ajouter le contrôle de plein écran
-    map.current.addControl(new mapboxgl.FullscreenControl(), 'top-right');
-
-    // Désactiver la rotation de la carte pour rester en 2D
+    // Désactiver la rotation de la carte
     map.current.dragRotate.disable();
     map.current.touchZoomRotate.disableRotation();
 
-    // Ajouter des événements interactifs
+    // Améliorer la lisibilité de la carte
     map.current.on('load', () => {
       if (!map.current) return;
 
-      // Améliorer la performance du rendu
+      // Ajuster l'opacité des labels pour une meilleure lisibilité
       map.current.on('zoom', () => {
         const currentZoom = map.current?.getZoom() || 0;
         const opacity = Math.min(Math.max((currentZoom - 11) / 5, 0), 1);
-        // Ajuster l'opacité des labels en fonction du zoom
         if (map.current?.getLayer('poi-labels')) {
           map.current?.setPaintProperty('poi-labels', 'text-opacity', opacity);
         }
@@ -148,6 +144,6 @@ export default function Map() {
   }, [mapboxToken]);
 
   return (
-    <div ref={mapContainer} className="w-full h-[600px] rounded-lg shadow-xl" /> // Hauteur augmentée pour une meilleure visibilité
+    <div ref={mapContainer} className="w-full h-[600px] rounded-lg shadow-xl" />
   );
 }
