@@ -89,11 +89,6 @@ const Navbar = () => {
             <NavLink to="/immobilier">Immobilier</NavLink>
             <NavLink to="/equipe">Notre Équipe</NavLink>
             <NavLink to="/contact">Contact</NavLink>
-            {!user && (
-              <NavLink to="/auth" className="px-4 py-2 bg-white text-primary rounded-lg hover:bg-gray-100 transition-colors font-inter text-sm border border-primary">
-                Connexion
-              </NavLink>
-            )}
             {user && (
               <button
                 onClick={handleLogout}
@@ -112,11 +107,6 @@ const Navbar = () => {
                 <NavLink to="/immobilier">Immobilier</NavLink>
                 <NavLink to="/equipe">Notre Équipe</NavLink>
                 <NavLink to="/contact">Contact</NavLink>
-                {!user && (
-                  <NavLink to="/auth" className="px-4 py-2 bg-white text-primary rounded-lg hover:bg-gray-100 transition-colors font-inter text-sm text-center border border-primary">
-                    Connexion
-                  </NavLink>
-                )}
                 {user && (
                   <button
                     onClick={handleLogout}
