@@ -11,6 +11,7 @@ import PropertiesTab from "@/components/admin/tabs/PropertiesTab";
 import PropertyTypesTab from "@/components/admin/tabs/PropertyTypesTab";
 import StatsTab from "@/components/admin/tabs/StatsTab";
 import SocialLinksTab from "@/components/admin/tabs/SocialLinksTab";
+import ContentTab from "@/components/admin/tabs/ContentTab";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
@@ -80,8 +81,9 @@ const Admin = () => {
           </Button>
         </div>
 
-        <Tabs defaultValue="properties" className="space-y-6">
+        <Tabs defaultValue="content" className="space-y-6">
           <TabsList>
+            <TabsTrigger value="content">Contenu des Pages</TabsTrigger>
             <TabsTrigger value="properties">Biens Immobiliers</TabsTrigger>
             <TabsTrigger value="property-types">Types de Biens</TabsTrigger>
             <TabsTrigger value="stats">Statistiques</TabsTrigger>
@@ -90,6 +92,12 @@ const Admin = () => {
             <TabsTrigger value="appointments">Rendez-vous</TabsTrigger>
             <TabsTrigger value="social-links">Réseaux Sociaux</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="content">
+            <div className="bg-white rounded-lg shadow p-6">
+              <ContentTab />
+            </div>
+          </TabsContent>
 
           <TabsContent value="properties">
             <PropertiesTab />
