@@ -92,7 +92,7 @@ const Hero = () => {
             />
             <ServiceCard
               icon={<Briefcase className="w-8 h-8" />}
-              title="Transactions"
+              title="Transactions immobilières"
               description="Accompagnement achat et vente"
             />
           </motion.div>
