@@ -37,11 +37,13 @@ export default function Map() {
 
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/streets-v12', // Changé pour un style avec plus de détails
+      style: 'mapbox://styles/mapbox/satellite-streets-v12', // Style hybride satellite + rues
       center: [-3.9892, 5.3484], // Abidjan coordinates
-      zoom: 12,
-      minZoom: 9, // Limite le zoom minimum pour garder le contexte
-      maxZoom: 18, // Permet un zoom plus proche pour voir les détails
+      zoom: 13,
+      minZoom: 11, // Zoom minimum ajusté pour voir plus de contexte
+      maxZoom: 19, // Zoom maximum augmenté pour plus de détails
+      pitch: 0, // Vue en 2D
+      bearing: 0, // Orientation vers le nord
     });
 
     // Add markers for both locations
@@ -49,41 +51,57 @@ export default function Map() {
       {
         coordinates: [-3.9733, 5.3576] as [number, number],
         name: "Cabinet Maître Diarra - Cocody",
-        description: "Cocody 2 plateaux, non loin du commissariat du 12e"
+        description: "Cocody 2 plateaux, non loin du commissariat du 12e",
+        horaires: "Lundi - Vendredi: 8h00 - 17h00",
+        contact: "+225 07 07 84 37 77"
       },
       {
         coordinates: [-4.0060, 5.3073] as [number, number],
         name: "Cabinet Maître Diarra - Treichville",
-        description: "Treichville, non loin du commissariat du 2e"
+        description: "Treichville, non loin du commissariat du 2e",
+        horaires: "Lundi - Vendredi: 8h00 - 17h00",
+        contact: "+225 01 02 46 52 52"
       }
     ];
 
     locations.forEach(location => {
       // Créer un élément personnalisé pour le marqueur
       const marker = document.createElement('div');
-      marker.className = 'w-6 h-6 bg-accent rounded-full border-2 border-white shadow-lg cursor-pointer';
+      marker.className = 'w-8 h-8 bg-accent rounded-full border-3 border-white shadow-lg cursor-pointer hover:bg-primary transition-colors duration-300';
 
-      // Créer un popup avec plus d'informations
+      // Créer un popup plus détaillé avec plus d'informations
       const popup = new mapboxgl.Popup({
-        offset: 25,
-        closeButton: false,
-        maxWidth: '300px'
+        offset: 30,
+        closeButton: true,
+        maxWidth: '350px',
+        className: 'custom-popup'
       }).setHTML(`
-        <div class="p-2">
-          <h3 class="font-bold text-lg mb-1">${location.name}</h3>
-          <p class="text-gray-600">${location.description}</p>
+        <div class="p-4 bg-white rounded-lg">
+          <h3 class="font-bold text-xl mb-2 text-primary">${location.name}</h3>
+          <div class="space-y-2 text-gray-700">
+            <p class="text-base"><strong>Adresse:</strong> ${location.description}</p>
+            <p class="text-base"><strong>Horaires:</strong> ${location.horaires}</p>
+            <p class="text-base"><strong>Contact:</strong> ${location.contact}</p>
+          </div>
         </div>
       `);
 
       // Ajouter le marqueur à la carte
-      new mapboxgl.Marker(marker)
+      const mapMarker = new mapboxgl.Marker(marker)
         .setLngLat(location.coordinates)
         .setPopup(popup)
         .addTo(map.current!);
+
+      // Ajouter un effet hover sur le marqueur
+      marker.addEventListener('mouseenter', () => {
+        popup.addTo(map.current!);
+      });
     });
 
     // Ajouter les contrôles de navigation
-    map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+    map.current.addControl(new mapboxgl.NavigationControl({
+      visualizePitch: false // Désactiver la visualisation du pitch pour rester en 2D
+    }), 'top-right');
     
     // Ajouter le contrôle de géolocalisation
     map.current.addControl(new mapboxgl.GeolocateControl({
@@ -96,20 +114,30 @@ export default function Map() {
 
     // Ajouter l'échelle
     map.current.addControl(new mapboxgl.ScaleControl({
-      maxWidth: 100,
+      maxWidth: 150,
       unit: 'metric'
     }), 'bottom-right');
 
     // Ajouter le contrôle de plein écran
     map.current.addControl(new mapboxgl.FullscreenControl(), 'top-right');
 
-    // Améliorer l'interaction avec la carte
+    // Désactiver la rotation de la carte pour rester en 2D
+    map.current.dragRotate.disable();
+    map.current.touchZoomRotate.disableRotation();
+
+    // Ajouter des événements interactifs
     map.current.on('load', () => {
       if (!map.current) return;
-      
-      // Activer la rotation de la carte
-      map.current.dragRotate.enable();
-      map.current.touchZoomRotate.enableRotation();
+
+      // Améliorer la performance du rendu
+      map.current.on('zoom', () => {
+        const currentZoom = map.current?.getZoom() || 0;
+        const opacity = Math.min(Math.max((currentZoom - 11) / 5, 0), 1);
+        // Ajuster l'opacité des labels en fonction du zoom
+        if (map.current?.getLayer('poi-labels')) {
+          map.current?.setPaintProperty('poi-labels', 'text-opacity', opacity);
+        }
+      });
     });
 
     return () => {
@@ -120,6 +148,6 @@ export default function Map() {
   }, [mapboxToken]);
 
   return (
-    <div ref={mapContainer} className="w-full h-[500px] rounded-lg shadow-lg" /> // Hauteur augmentée pour une meilleure visibilité
+    <div ref={mapContainer} className="w-full h-[600px] rounded-lg shadow-xl" /> // Hauteur augmentée pour une meilleure visibilité
   );
 }
