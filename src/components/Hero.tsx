@@ -82,7 +82,7 @@ const Hero = () => {
           >
             <ServiceCard
               icon={<Gavel className="w-8 h-8" />}
-              title="Conseil Juridique"
+              title="Assistance Juridique"
               description="Expertise en droit des affaires et droit civil"
             />
             <ServiceCard
