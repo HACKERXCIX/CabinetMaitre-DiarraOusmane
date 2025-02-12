@@ -89,11 +89,15 @@ const Navbar = () => {
             <NavLink to="/immobilier">Immobilier</NavLink>
             <NavLink to="/equipe">Notre Équipe</NavLink>
             <NavLink to="/contact">Contact</NavLink>
-            {/* Le lien Admin est maintenant complètement retiré */}
+            {!user && (
+              <NavLink to="/auth" className="px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent/90 transition-colors font-inter text-sm">
+                Connexion
+              </NavLink>
+            )}
             {user && (
               <button
                 onClick={handleLogout}
-                className="invisible px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent/90 transition-colors font-inter text-sm"
+                className="px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent/90 transition-colors font-inter text-sm"
               >
                 Se déconnecter
               </button>
@@ -108,11 +112,15 @@ const Navbar = () => {
                 <NavLink to="/immobilier">Immobilier</NavLink>
                 <NavLink to="/equipe">Notre Équipe</NavLink>
                 <NavLink to="/contact">Contact</NavLink>
-                {/* Le lien Admin est maintenant complètement retiré du menu mobile également */}
+                {!user && (
+                  <NavLink to="/auth" className="px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent/90 transition-colors font-inter text-sm text-center">
+                    Connexion
+                  </NavLink>
+                )}
                 {user && (
                   <button
                     onClick={handleLogout}
-                    className="invisible px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent/90 transition-colors font-inter text-sm"
+                    className="px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent/90 transition-colors font-inter text-sm"
                   >
                     Se déconnecter
                   </button>
@@ -126,10 +134,10 @@ const Navbar = () => {
   );
 };
 
-const NavLink = ({ to, children }: { to: string; children: React.ReactNode }) => (
+const NavLink = ({ to, children, className = "" }: { to: string; children: React.ReactNode; className?: string }) => (
   <Link
     to={to}
-    className="font-inter text-primary hover:text-accent transition-colors duration-200"
+    className={`font-inter text-primary hover:text-accent transition-colors duration-200 ${className}`}
   >
     {children}
   </Link>
