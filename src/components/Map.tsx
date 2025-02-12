@@ -1,16 +1,39 @@
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { supabase } from "@/integrations/supabase/client";
 
 export default function Map() {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
+  const [mapboxToken, setMapboxToken] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!mapContainer.current) return;
+    const fetchMapboxToken = async () => {
+      const { data, error } = await supabase
+        .from('api_keys')
+        .select('key')
+        .eq('name', 'mapbox_token')
+        .single();
 
-    mapboxgl.accessToken = 'pk.eyJ1IjoibWRpYXJyYSIsImEiOiJjbHRuMDc4bjQwN3RoMmtvN3FzMG11dW4wIn0.Sp8YfUDcbrdlh7k4vOk3cA';
+      if (error) {
+        console.error('Error fetching Mapbox token:', error);
+        return;
+      }
+
+      if (data) {
+        setMapboxToken(data.key);
+      }
+    };
+
+    fetchMapboxToken();
+  }, []);
+
+  useEffect(() => {
+    if (!mapContainer.current || !mapboxToken) return;
+
+    mapboxgl.accessToken = mapboxToken;
 
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
@@ -49,7 +72,7 @@ export default function Map() {
         map.current.remove();
       }
     };
-  }, []);
+  }, [mapboxToken]); // Add mapboxToken as a dependency
 
   return (
     <div ref={mapContainer} className="w-full h-[400px] rounded-lg shadow-lg" />
