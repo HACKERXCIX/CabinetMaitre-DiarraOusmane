@@ -5,8 +5,28 @@ import Hero from "../components/Hero";
 import AppointmentForm from "../components/AppointmentForm";
 import Footer from "../components/Footer";
 import { motion } from "framer-motion";
+import { usePageContent } from "@/hooks/usePageContent";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
+  const { data: heroContent } = usePageContent("home", "hero");
+  const { data: expertiseContent } = usePageContent("home", "expertise");
+
+  const { data: services = [] } = useQuery({
+    queryKey: ["services"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("services")
+        .select("*")
+        .is("deleted_at", null)
+        .order("created_at", { ascending: true });
+
+      if (error) throw error;
+      return data;
+    },
+  });
+
   useEffect(() => {
     document.title = "Cabinet Maître Diarra - Accueil";
   }, []);
@@ -25,7 +45,7 @@ const Index = () => {
                 transition={{ duration: 0.6 }}
                 className="inline-block px-4 py-1 mb-6 bg-accent text-primary rounded-full font-inter text-sm"
               >
-                Nos Domaines d'Expertise
+                {expertiseContent?.subtitle || "Nos Domaines d'Expertise"}
               </motion.span>
               <motion.h2
                 initial={{ opacity: 0, y: 20 }}
@@ -33,7 +53,7 @@ const Index = () => {
                 transition={{ duration: 0.6, delay: 0.2 }}
                 className="text-4xl font-playfair font-bold text-primary mb-6"
               >
-                Services Juridiques & Immobiliers
+                {expertiseContent?.title || "Services Juridiques & Immobiliers"}
               </motion.h2>
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
@@ -41,12 +61,18 @@ const Index = () => {
                 transition={{ duration: 0.6, delay: 0.4 }}
                 className="text-lg text-primary/80 font-inter"
               >
-                Une approche personnalisée pour répondre à vos besoins spécifiques
+                {expertiseContent?.description || "Une approche personnalisée pour répondre à vos besoins spécifiques"}
               </motion.p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {services.map((service, index) => (
-                <ServiceCard key={service.title} {...service} index={index} />
+                <ServiceCard 
+                  key={service.id} 
+                  title={service.title}
+                  description={service.description[0]} 
+                  icon={service.icon_name} 
+                  index={index} 
+                />
               ))}
             </div>
           </div>
@@ -61,7 +87,7 @@ const Index = () => {
                 transition={{ duration: 0.6 }}
                 className="text-4xl font-playfair font-bold text-primary mb-6"
               >
-                Prendre Rendez-vous
+                {heroContent?.appointment_title || "Prendre Rendez-vous"}
               </motion.h2>
             </div>
             <AppointmentForm />
@@ -72,24 +98,6 @@ const Index = () => {
     </div>
   );
 };
-
-const services = [
-  {
-    title: "Conseil Juridique",
-    description: "Expertise en droit des affaires, droit immobilier et droit civil",
-    icon: "⚖️",
-  },
-  {
-    title: "Gestion Immobilière",
-    description: "Administration complète de vos biens immobiliers",
-    icon: "🏢",
-  },
-  {
-    title: "Transactions",
-    description: "Accompagnement dans vos projets d'achat et de vente",
-    icon: "📋",
-  },
-];
 
 const ServiceCard = ({
   title,
