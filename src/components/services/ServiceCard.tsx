@@ -12,7 +12,16 @@ interface ServiceCardProps {
 }
 
 const DynamicIcon = ({ name }: { name: string }) => {
-  const IconComponent = (Icons as any)[name];
+  // Mapping des noms d'icônes personnalisés vers les icônes Lucide
+  const iconMapping: { [key: string]: string } = {
+    "Assistance Juridique": "Scale",
+    "Transactions immobilières": "Home"
+  };
+
+  // Utiliser le mapping ou le nom direct si non trouvé
+  const iconName = iconMapping[name] || name;
+  const IconComponent = (Icons as any)[iconName];
+  
   return IconComponent ? <IconComponent className="w-10 h-10 text-primary" /> : null;
 };
 
