@@ -65,7 +65,7 @@ const Footer = () => {
                 className="text-center"
               >
                 <p className="text-4xl font-playfair font-bold text-accent mb-2">40+</p>
-                <p className="text-white text-sm">ans d'expérience</p>
+                <p className="text-white text-sm">années d'expérience</p>
               </motion.div>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}

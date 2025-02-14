@@ -75,7 +75,7 @@ const Navbar = () => {
             Cabinet Maître Diarra
           </Link>
 
-          {/* Mobile menu button */}
+          {/* Bouton menu mobile */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="md:hidden text-primary"
@@ -83,7 +83,7 @@ const Navbar = () => {
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
 
-          {/* Desktop menu */}
+          {/* Menu desktop */}
           <div className="hidden md:flex items-center space-x-8">
             <NavLink to="/services">Services</NavLink>
             <NavLink to="/immobilier">Immobilier</NavLink>
@@ -99,7 +99,7 @@ const Navbar = () => {
             )}
           </div>
 
-          {/* Mobile menu */}
+          {/* Menu mobile */}
           {isMenuOpen && (
             <div className="absolute top-full left-0 right-0 bg-white shadow-lg md:hidden p-4 animate-fade-in">
               <div className="flex flex-col space-y-4">
